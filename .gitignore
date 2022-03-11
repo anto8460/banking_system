@@ -1,5 +1,6 @@
 .idea/
-banking_system/banking_system/__pycache__
+*.pyc
+*.pyo
 banking_system/banking_system/.env
 Lib/
 Scripts/
