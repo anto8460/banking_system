@@ -6,19 +6,25 @@ from django.shortcuts import render
 
 def home(request):
 
-    contex = {}
+    context = {}
 
     if request.user:
         user = request.user
-        customer = Customer.objects.filter(user=user)
+        customer = Customer.objects.filter(user=user)[0]
 
         if customer:
-            # accounts = Account.filter.get(customer=customer)
-            # print(accounts)
-            ...
+            accounts = Account.objects.filter(customer=customer)
+
+            context = {
+                'customer_name': customer.first_name,
+                'customer_last_name': customer.last_name,
+                'accounts': accounts,
+            }
+
         else:
             employee = Employee.objects.filter(user=user)
-        return HttpResponse('You are logged with ')
+
+        return render(request, 'home.html', context)
 
     if request.method == 'POST':
         ...
