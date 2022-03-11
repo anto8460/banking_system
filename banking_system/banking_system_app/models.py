@@ -6,7 +6,7 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
-
+from django.contrib.auth.models import User
 
 class AccountTypes(models.Model):
     id = models.CharField(primary_key=True, max_length=36)
@@ -56,7 +56,7 @@ class BankDetails(models.Model):
 
 class Customers(models.Model):
     id = models.CharField(primary_key=True, max_length=36)
-    user = models.OneToOneField('Users', models.DO_NOTHING)
+    user = models.OneToOneField(Users, models.DO_NOTHING)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.CharField(unique=True, max_length=255)
@@ -107,15 +107,3 @@ class Transactions(models.Model):
     class Meta:
         managed = False
         db_table = 'transactions'
-
-
-class Users(models.Model):
-    id = models.CharField(primary_key=True, max_length=36)
-    username = models.CharField(unique=True, max_length=255)
-    password = models.CharField(max_length=255)
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'users'
