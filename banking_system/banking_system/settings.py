@@ -1,4 +1,5 @@
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,6 +26,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'banking_system_app',
+    'login_app'
 ]
 
 MIDDLEWARE = [
@@ -63,10 +66,12 @@ WSGI_APPLICATION = 'banking_system.wsgi.application'
 
 DATABASES = {
     'default': {
-        'NAME': 'banking_system',
-        'ENGINE': 'mysql.connector.django',
-        'USER': 'root',
-        'PASSWORD': 'testtest',
+        'NAME': config('NAME'),
+        'ENGINE': config('ENGINE'),
+        'USER': config('USER1'),
+        'PASSWORD': config('PASSWORD'),
+        'HOST': config('HOST'),
+        'PORT': config('PORT'),
         'OPTIONS': {
           'autocommit': True,
         },
