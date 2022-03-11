@@ -29,7 +29,7 @@ class Account(models.Model):
     account_type = models.ForeignKey(AccountType, models.DO_NOTHING)
     customer = models.ForeignKey('Customer', models.DO_NOTHING)
     account_number = models.CharField(unique=True, max_length=255)
-    balance = models.FloatField()
+    # balance = models.FloatField()
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField(blank=True, null=True)
 
@@ -39,6 +39,9 @@ class Account(models.Model):
 
     def __str__(self):
         return f'Account - {self.account_number}'
+
+    def get_balance(self):
+        ...
 
 
 class AccountsTransaction(models.Model):
