@@ -37,6 +37,9 @@ class Account(models.Model):
         managed = False
         db_table = 'accounts'
 
+    def __str__(self):
+        return f'Account - {self.account_number}'
+
 
 class AccountsTransaction(models.Model):
     account = models.OneToOneField(Account, models.DO_NOTHING, primary_key=True)
@@ -58,6 +61,9 @@ class BankDetail(models.Model):
         managed = False
         db_table = 'bank_details'
 
+    def __str__(self):
+        return f'BankDetails - {self.id}'
+
 
 class Customer(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -65,7 +71,7 @@ class Customer(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.CharField(unique=True, max_length=255)
-    cpr = models.CharField(unique=True, max_length=8)
+    cpr = models.CharField(unique=True, max_length=10)
     age = models.IntegerField()
     phone_number = models.CharField(unique=True, max_length=255)
     created_at = models.DateTimeField()
@@ -74,6 +80,9 @@ class Customer(models.Model):
     class Meta:
         managed = False
         db_table = 'customers'
+
+    def __str__(self):
+        return f'Customer - {self.first_name} {self.last_name}: UserId {self.user.username}'
 
 
 class Employee(models.Model):
@@ -90,6 +99,9 @@ class Employee(models.Model):
         managed = False
         db_table = 'employees'
 
+    def __str__(self):
+        return f'Employee - {self.first_name} {self.last_name}: UserId {self.user.username}'
+
 
 class Loan(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -102,6 +114,9 @@ class Loan(models.Model):
         managed = False
         db_table = 'loans'
 
+    def __str__(self):
+        return f'Loan - {self.customer} - {self.amount}'
+
 
 class Transaction(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -112,3 +127,4 @@ class Transaction(models.Model):
     class Meta:
         managed = False
         db_table = 'transactions'
+
