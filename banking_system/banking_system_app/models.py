@@ -56,7 +56,7 @@ class BankDetails(models.Model):
 
 class Customers(models.Model):
     id = models.CharField(primary_key=True, max_length=36)
-    user = models.OneToOneField(Users, models.DO_NOTHING)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.CharField(unique=True, max_length=255)
