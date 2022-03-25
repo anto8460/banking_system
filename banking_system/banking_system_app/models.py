@@ -130,4 +130,3 @@ class Transaction(models.Model):
     class Meta:
         managed = False
         db_table = 'transactions'
-
