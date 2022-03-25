@@ -7,3 +7,4 @@ Scripts/
 pyvenv.cfg
 .vscode/
 .venv/
+__pycache__/
