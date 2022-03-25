@@ -10,7 +10,7 @@ def home(request):
 
     if request.user:
         user = request.user
-        customer = Customer.objects.filter(user=user)[0]
+        customer= Customer.objects.get(user=user)
 
         if customer:
             accounts = Account.objects.filter(customer=customer)
