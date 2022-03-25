@@ -5,3 +5,5 @@ banking_system/banking_system/.env
 Lib/
 Scripts/
 pyvenv.cfg
+.vscode/
+.venv/
