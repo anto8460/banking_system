@@ -30,9 +30,7 @@ def logout(request):
 def password_reset(request):
     ...
 
+
 # TODO
 def sign_up(request):
     ...
-
-
-

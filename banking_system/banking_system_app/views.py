@@ -10,20 +10,18 @@ def home(request):
 
     if request.user:
         user = request.user
-        customer= Customer.objects.get(user=user)
 
-        if customer:
-            accounts = Account.objects.filter(customer=customer)
+        if not user.is_staff:
+            accounts = Account.objects.filter(user_id=user)
 
             context = {
-                'customer_name': customer.first_name,
-                'customer_last_name': customer.last_name,
+                'customer_name': user.first_name,
+                'customer_last_name': user.last_name,
                 'accounts': accounts,
             }
 
         else:
-            employee = Employee.objects.filter(user=user)
-
+            context = {}
         return render(request, 'home.html', context)
 
     if request.method == 'POST':
