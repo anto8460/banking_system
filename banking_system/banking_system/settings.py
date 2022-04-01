@@ -73,8 +73,6 @@ DATABASES = {
         'HOST': config('HOST'),
         'PORT': config('PORT'),
         'OPTIONS': {
-            'autocommit': True,
-            "init_command": "SET foreign_key_checks = 0;",
         },
     }
 }
