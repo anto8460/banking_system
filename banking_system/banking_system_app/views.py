@@ -1,8 +1,8 @@
 from django.http import HttpResponse
-from django.contrib.auth.models import User
 from .models import Account
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+
 
 @login_required(login_url='/login')
 def home(request):
@@ -14,11 +14,10 @@ def home(request):
 
         # We assign the user from the request to a local variable.
         user = request.user
-        
+
         # If the user is a customer.
         if not user.is_staff:
             accounts = Account.objects.filter(user_id=user)
-
             context = {
                 'user': user,
                 'accounts': accounts
@@ -26,18 +25,9 @@ def home(request):
 
             # We render the customer's homepage.
             return render(request, 'customer_home.html', context)
-            
+
         # If the user is an employee
         else:
-            context = {
-                'user': user
-            }
+            context = {}
 
-            # We render the employee's homepage.
-            return render(request, 'employee_home.html', context)
-
-
-    #if request.method == 'POST':
-    #    ...
-
-    # return render(request, 'index.html')
+        return render(request, 'home.html', context)

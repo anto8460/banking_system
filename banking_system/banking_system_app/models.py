@@ -22,7 +22,6 @@ class AccountType(models.Model):
     class Meta:
         db_table = 'account_types'
 
-
 class Account(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     account_type = models.ForeignKey(AccountType, models.DO_NOTHING)
@@ -36,6 +35,13 @@ class Account(models.Model):
 
     def __str__(self):
         return f'Account - {self.account_number}'
+
+    def get_balance(self):
+        transactions = AccountsTransaction.objects.filter(account=self.id)
+        balance = 0
+        for transaction in transactions:
+            balance += Transaction.objects.get(id=transaction.transaction.id).amount
+        return balance
 
 
 class AccountsTransaction(models.Model):
