@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django.contrib.auth.models import User
-from .models import Customer, Employee, Account
+from .models import Account
 from django.shortcuts import render
 
 
