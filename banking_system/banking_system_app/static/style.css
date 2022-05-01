@@ -1,0 +1,27 @@
+.container {
+    padding-inline: 1rem;
+}
+
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-container .navbar-text a {
+    text-decoration: none;
+    color: rgba(0, 0, 0, 0.55);
+}
+
+.navbar-container .navbar-text i {
+    margin-right: 5px;
+}
+
+.navbar-container .navbar-text a:hover, .nav-item:hover {
+    text-decoration: underline;
+    color: rgba(0, 0, 0, 1);
+}
+
+.logout {
+    margin-left: 1rem;
+}
