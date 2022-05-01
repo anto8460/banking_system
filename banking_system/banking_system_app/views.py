@@ -1,31 +1,43 @@
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from .models import Account
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 
-
+@login_required(login_url='/login')
 def home(request):
 
     context = {}
 
-    if request.user:
-        user = request.user
+    # If the user is already logged in.
+    if request.user and not request.user.is_anonymous:
 
+        # We assign the user from the request to a local variable.
+        user = request.user
+        
+        # If the user is a customer.
         if not user.is_staff:
             accounts = Account.objects.filter(user_id=user)
 
             context = {
-                'customer_name': user.first_name,
-                'customer_last_name': user.last_name,
-                'accounts': accounts,
+                'user': user,
+                'accounts': accounts
             }
 
+            # We render the customer's homepage.
+            return render(request, 'customer_home.html', context)
+            
+        # If the user is an employee
         else:
-            context = {}
-        return render(request, 'home.html', context)
+            context = {
+                'user': user
+            }
 
-    if request.method == 'POST':
-        ...
+            # We render the employee's homepage.
+            return render(request, 'employee_home.html', context)
+
+
+    #if request.method == 'POST':
+    #    ...
 
     # return render(request, 'index.html')
-

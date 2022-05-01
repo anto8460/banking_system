@@ -56,6 +56,10 @@
                               <a href="#!" class="small text-muted">Privacy policy</a>
                            </form>
 
+                           {% if error %}
+                           {{ error }}
+                           {% endif %}
+
                         </div>
                      </div>
                   </div>
@@ -64,10 +68,6 @@
          </div>
       </div>
    </section>
-
-   {% if error %}
-   {{ error }}
-   {% endif %}
 </body>
 
 </html>
