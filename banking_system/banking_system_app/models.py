@@ -5,6 +5,7 @@
 #   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
+
 from django.db import models
 from django.contrib.auth.models import User
 import uuid
@@ -21,6 +22,7 @@ class AccountType(models.Model):
 
     class Meta:
         db_table = 'account_types'
+
 
 class Account(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
@@ -39,18 +41,10 @@ class Account(models.Model):
     def get_balance(self):
         transactions = AccountsTransaction.objects.filter(account=self.id)
         balance = 0
-        for transaction in transactions:
-            balance += Transaction.objects.get(id=transaction.transaction.id).amount
+        print(transactions)
+        # for transaction in transactions:
+        #     balance += Transaction.objects.get(transaction=transaction.transaction.id).amount
         return balance
-
-
-class AccountsTransaction(models.Model):
-    account = models.OneToOneField(Account, models.DO_NOTHING, primary_key=True, default=uuid.uuid4)
-    transaction = models.ForeignKey('Transaction', models.DO_NOTHING)
-
-    class Meta:
-        db_table = 'accounts_transactions'
-        unique_together = (('account', 'transaction'),)
 
 
 class BankDetail(models.Model):
@@ -104,3 +98,12 @@ class Transaction(models.Model):
 
     class Meta:
         db_table = 'transactions'
+
+
+class AccountsTransaction(models.Model):
+    account = models.OneToOneField(Account, models.DO_NOTHING)
+    transaction = models.ForeignKey(Transaction, models.DO_NOTHING)
+
+    class Meta:
+        db_table = 'accounts_transactions'
+        unique_together = (('account', 'transaction'),)

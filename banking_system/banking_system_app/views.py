@@ -18,6 +18,7 @@ def home(request):
         # If the user is a customer.
         if not user.is_staff:
             accounts = Account.objects.filter(user_id=user)
+            print(accounts[0].get_balance())
             context = {
                 'user': user,
                 'accounts': accounts
