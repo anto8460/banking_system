@@ -48,9 +48,33 @@
             </div>
             <h1>Welcome, {{ user.first_name }}!</h1>
             <h2>Existing Accounts:</h2>
-                <p>
-                    {{ account.account_type.type }} : {{ account.account_number }}
-                </p>
+            <p>{{ account.account_type.type }} : {{ account.account_number }}</p>
+            
+            <h2>Current Balance</h2>
+            <p>{{ balance }}</p>
+            <div class="container">
+                <table class="table table-striped">
+                    <h3>Transaction History</h3>
+                    <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Transaction Id</th>
+                          <th scope="col">Amount</th>
+                          <th scope="col">Date</th>
+                        </tr>
+                      </thead>
+                      {% for idx, transaction in transactions %}
+                      <tbody>
+                        <tr>
+                          <th scope="row">{{ idx }}</th>
+                          <td>{{ transaction.id }}</td>
+                          <td>{{ transaction.amount }}</td>
+                          <td>{{ transaction.created_at }}</td>
+                        </tr>
+                      </tbody>
+                      {% endfor %}
+                </table
+            </div>
         </div>
     </body>
 </html>

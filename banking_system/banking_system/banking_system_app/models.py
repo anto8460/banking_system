@@ -48,6 +48,16 @@ class Account(models.Model):
 
         return balance
 
+    def get_transactions(self):
+        transactions = AccountsTransaction.objects.filter(account=self.id)
+        tx_list = []
+
+        for idx, transaction in enumerate(transactions):
+            # create a tuple to hold the transaction index
+            tx_list.append((idx+1, (Transaction.objects.get(id=transaction.transaction.id))))
+
+        return tx_list
+
 
 class BankDetail(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)

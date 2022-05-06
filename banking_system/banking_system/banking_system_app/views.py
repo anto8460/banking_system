@@ -22,7 +22,8 @@ def home(request):
             context = {
                 'user': user,
                 'account': account,
-                'balance': account.get_balance()
+                'balance': account.get_balance(),
+                'transactions': account.get_transactions()
             }
 
             # We render the customer's homepage.
