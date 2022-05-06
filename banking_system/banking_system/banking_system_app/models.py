@@ -5,6 +5,7 @@
 #   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
+
 from django.db import models
 from django.contrib.auth.models import User
 import uuid
@@ -37,14 +38,25 @@ class Account(models.Model):
     def __str__(self):
         return f'Account - {self.account_number}'
 
+    def get_balance(self):
+        transactions = AccountsTransaction.objects.filter(account=self.id)
+        balance = 0
 
-class AccountsTransaction(models.Model):
-    account = models.OneToOneField(Account, models.DO_NOTHING, primary_key=True, default=uuid.uuid4)
-    transaction = models.ForeignKey('Transaction', models.DO_NOTHING)
+        for transaction in transactions:
+            transaction = Transaction.objects.get(id=transaction.transaction.id)
+            balance += transaction.amount
 
-    class Meta:
-        db_table = 'accounts_transactions'
-        unique_together = (('account', 'transaction'),)
+        return balance
+
+    def get_transactions(self):
+        transactions = AccountsTransaction.objects.filter(account=self.id)
+        tx_list = []
+
+        for idx, transaction in enumerate(transactions):
+            # create a tuple to hold the transaction index
+            tx_list.append((idx+1, (Transaction.objects.get(id=transaction.transaction.id))))
+
+        return tx_list
 
 
 class BankDetail(models.Model):
@@ -98,3 +110,13 @@ class Transaction(models.Model):
 
     class Meta:
         db_table = 'transactions'
+
+
+class AccountsTransaction(models.Model):
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    account = models.ForeignKey(Account, models.DO_NOTHING, unique=False)
+    transaction = models.ForeignKey(Transaction, models.DO_NOTHING)
+
+    class Meta:
+        db_table = 'accounts_transactions'
+        unique_together = (('account', 'transaction'),)

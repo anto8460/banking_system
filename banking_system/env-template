@@ -1,6 +1,7 @@
 ENGINE=djnango_driver_engine
 NAME=db_schema_name
-USER=user_name
+USER1=user_name
 PASSWORD=password
 HOST=ip_host
 PORT=port
+SECRET_KEY=secret_key
