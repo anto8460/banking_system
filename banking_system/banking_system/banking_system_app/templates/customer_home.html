@@ -48,11 +48,9 @@
             </div>
             <h1>Welcome, {{ user.first_name }}!</h1>
             <h2>Existing Accounts:</h2>
-            {% for account in accounts %}
                 <p>
                     {{ account.account_type.type }} : {{ account.account_number }}
                 </p>
-            {% endfor %}
         </div>
     </body>
 </html>

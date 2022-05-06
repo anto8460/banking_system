@@ -41,9 +41,11 @@ class Account(models.Model):
     def get_balance(self):
         transactions = AccountsTransaction.objects.filter(account=self.id)
         balance = 0
-        print(transactions)
-        # for transaction in transactions:
-        #     balance += Transaction.objects.get(transaction=transaction.transaction.id).amount
+
+        for transaction in transactions:
+            transaction = Transaction.objects.get(id=transaction.transaction.id)
+            balance += transaction.amount
+
         return balance
 
 
@@ -101,7 +103,8 @@ class Transaction(models.Model):
 
 
 class AccountsTransaction(models.Model):
-    account = models.OneToOneField(Account, models.DO_NOTHING)
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    account = models.ForeignKey(Account, models.DO_NOTHING, unique=False)
     transaction = models.ForeignKey(Transaction, models.DO_NOTHING)
 
     class Meta:

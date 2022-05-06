@@ -17,11 +17,12 @@ def home(request):
 
         # If the user is a customer.
         if not user.is_staff:
-            accounts = Account.objects.filter(user_id=user)
-            print(accounts[0].get_balance())
+            account = Account.objects.get(user_id=user)
+
             context = {
                 'user': user,
-                'accounts': accounts
+                'account': account,
+                'balance': account.get_balance()
             }
 
             # We render the customer's homepage.
