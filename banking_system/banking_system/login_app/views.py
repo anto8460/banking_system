@@ -1,9 +1,6 @@
-# from django.http import HttpResponse
 from django.shortcuts import render, reverse
-# from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as dj_login, logout as dj_logout
 from django.shortcuts import HttpResponseRedirect
-# from banking_system.banking_system_app.models import Customers, Accounts
 
 
 def login(request):

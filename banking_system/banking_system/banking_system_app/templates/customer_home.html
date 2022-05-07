@@ -42,8 +42,8 @@
                 </nav>
                 <span class="navbar-text">
                     <i class="fa-solid fa-user"></i>
-                    <a href="#">{{ user.first_name }} {{ user.last_name }}</a>
-                    <a href="#" class="logout"><i class="fa-solid fa-right-from-bracket"></i></a>
+                    <a href="{% url 'banking_system_app:home' %}">{{ user.first_name }} {{ user.last_name }}</a>
+                    <a href="{% url 'login_app:logout' %}" class="logout"><i class="fa-solid fa-right-from-bracket"></i></a>
                 </span>
             </div>
             <h1>Welcome, {{ user.first_name }}!</h1>
