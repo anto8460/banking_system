@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from .models import Account
+from .models import Account, UserInformation
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
@@ -31,6 +31,54 @@ def home(request):
 
         # If the user is an employee
         else:
-            context = {}
-
-        return render(request, 'home.html', context)
+            clients = [
+                {
+                'first_name': 'Alberto',
+                'last_name': 'Unamuno',
+                'email': 'minecraft@gmail.com',
+                'number_of_accounts': 5,
+                },
+                {
+                'first_name': 'Caca',
+                'last_name': 'Entuboca',
+                'email': 'cacaentuboca@gmail.com',
+                'number_of_accounts': 5,
+                },
+                {
+                'first_name': 'rafa',
+                'last_name': 'eeeeeeee',
+                'email': 'mimimimi@gmail.com',
+                'number_of_accounts': 5,
+                },
+                {
+                'first_name': 'Minecraft',
+                'last_name': 'Unamuno',
+                'email': 'alberto_unamuno@gmail.com',
+                'number_of_accounts': 5,
+                },
+                {
+                'first_name': 'Alberto',
+                'last_name': 'Unamuno',
+                'email': 'alberto_unamuno@gmail.com',
+                'number_of_accounts': 5,
+                },
+                {
+                'first_name': 'Alberto',
+                'last_name': 'Unamuno',
+                'email': 'alberto_unamuno@gmail.com',
+                'number_of_accounts': 5,
+                },
+                {
+                'first_name': 'Alberto',
+                'last_name': 'Unamuno',
+                'email': 'alberto_unamuno@gmail.com',
+                'number_of_accounts': 5,
+                }
+            ]
+            context = {
+                'user': user,
+                'clients': clients
+            }
+            
+            # We render the employee's homepage.
+            return render(request, 'employee_home.html', context)
