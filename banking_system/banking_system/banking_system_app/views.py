@@ -23,6 +23,16 @@ def home(request):
             context = {
                 'user': user,
                 'accounts': accounts
+            accounts = Account.objects.filter(user_id=user)
+            accounts_balances = []
+
+            for index, account in enumerate(accounts):
+                balance = account.get_balance()
+                accounts_balances.append((index+1, account, balance))
+
+            context = {
+                'user': user,
+                'accounts': accounts_balances,
             }
 
             # We render the customer's homepage.
@@ -68,3 +78,42 @@ def clients(request):
     else:
         # We render an authorization error
         return render(request, 'auth_error.html')
+        return render(request, 'customer_home.html', context)
+
+
+@login_required(login_url='/login')
+def account_info(request, account_id):
+
+    context = {}
+    account = Account.objects.get(id=account_id)
+    transactions_raw = account.get_transactions()
+    transactions = []
+
+    for idx, transaction in enumerate(transactions_raw):
+        transactions.append((idx, transaction))
+
+    context = {
+        'account': account,
+        'transactions': account.get_transactions()
+    }
+
+    return render(request, 'account_info.html', context)
+
+@login_required(login_url='/login')
+def transfer(request):
+
+    context = {}
+
+    if request.user and not request.user.is_anonymous:
+
+        user = user.request
+
+        accounts = Account.objects.filter(user_id=user)
+
+        if request.method == 'POST':
+            print(request.POST['recipient'])
+            print(request.POST['amount'])
+
+            return render(request, 'transfer_form.html', context)
+        else:
+            return render(request, 'transfer_form.html', context)

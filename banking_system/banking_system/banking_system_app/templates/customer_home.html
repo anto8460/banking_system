@@ -53,27 +53,63 @@
             <h2>Current Balance</h2>
             <p>{{ balance }}</p>
             <div class="container">
-                <table class="table table-striped">
-                    <h3>Transaction History</h3>
-                    <thead>
-                        <tr>
-                          <th scope="col">#</th>
-                          <th scope="col">Transaction Id</th>
-                          <th scope="col">Amount</th>
-                          <th scope="col">Date</th>
-                        </tr>
-                      </thead>
-                      {% for idx, transaction in transactions %}
-                      <tbody>
-                        <tr>
-                          <th scope="row">{{ idx }}</th>
-                          <td>{{ transaction.id }}</td>
-                          <td>{{ transaction.amount }}</td>
-                          <td>{{ transaction.created_at }}</td>
-                        </tr>
-                      </tbody>
-                      {% endfor %}
-                </table
+                <div class="navbar-container">
+                    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+                        <a class="navbar-brand" href="/">ANFA Bank</a>
+                        <button class="navbar-toggler"
+                                type="button"
+                                data-toggle="collapse"
+                                data-target="#navbarText"
+                                aria-controls="navbarText"
+                                aria-expanded="false"
+                                aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarText">
+                            <ul class="navbar-nav mr-auto">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">Features</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">Pricing</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                    <span class="navbar-text">
+                        <i class="fa-solid fa-user"></i>
+                        <a href="#">{{ user.first_name }} {{ user.last_name }}</a>
+                        <a href="#" class="logout"><i class="fa-solid fa-right-from-bracket"></i></a>
+                    </span>
+                </div>
+                <h1>Welcome, {{ user.first_name }}!</h1>
+                    <table class="table table-striped">
+                        <h3>Select account</h3>
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Account number</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Balance</th>
+                            </tr>
+                            </thead>
+                            {% for idx, account, balance in accounts %}
+                            <tbody>
+                                <tr>
+                                    <th scope="row">{{ idx }}</th>
+                                    <td><a href="account/{{account.id}}">{{ account.account_name }}</a></td>
+                                    <td><a href="account/{{account.id}}">{{ account.account_number }}</a></td>
+                                    <td><a href="account/{{account.id}}">{{ account.account_type }}<a/></td>
+                                    <td><a href="account/{{account.id}}">{{ balance }}</a></td>
+                                </tr>
+                            </tbody>
+                            {% endfor %}
+                    </table>                 
+                </div>
             </div>
         </div>
     </body>

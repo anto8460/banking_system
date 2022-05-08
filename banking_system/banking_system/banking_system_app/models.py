@@ -29,6 +29,7 @@ class Account(models.Model):
     account_type = models.ForeignKey(AccountType, models.DO_NOTHING)
     user_id = models.ForeignKey(User, models.DO_NOTHING)
     account_number = models.CharField(unique=True, max_length=255)
+    account_name = models.CharField(unique=False, max_length=255)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField(blank=True, null=True)
 
