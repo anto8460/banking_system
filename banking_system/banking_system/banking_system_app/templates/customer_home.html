@@ -97,14 +97,14 @@
                                 <th scope="col">Balance</th>
                             </tr>
                             </thead>
-                            {% for idx, account, balance in accounts %}
+                            {% for account in accounts %}
                             <tbody>
                                 <tr>
                                     <th scope="row">{{ idx }}</th>
                                     <td><a href="account/{{account.id}}">{{ account.account_name }}</a></td>
                                     <td><a href="account/{{account.id}}">{{ account.account_number }}</a></td>
                                     <td><a href="account/{{account.id}}">{{ account.account_type }}<a/></td>
-                                    <td><a href="account/{{account.id}}">{{ balance }}</a></td>
+                                    <td><a href="account/{{account.id}}">{{ account.balance }}</a></td>
                                 </tr>
                             </tbody>
                             {% endfor %}

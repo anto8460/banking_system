@@ -24,15 +24,10 @@ def home(request):
                 'user': user,
                 'accounts': accounts
             accounts = Account.objects.filter(user_id=user)
-            accounts_balances = []
-
-            for index, account in enumerate(accounts):
-                balance = account.get_balance()
-                accounts_balances.append((index+1, account, balance))
 
             context = {
                 'user': user,
-                'accounts': accounts_balances,
+                'accounts': accounts,
             }
 
             # We render the customer's homepage.
