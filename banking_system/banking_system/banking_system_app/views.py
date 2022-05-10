@@ -113,7 +113,7 @@ def transfer(request):
             debit = Account.objects.get(id="c22f394d-0bea-465a-9b36-0ff92dee06c8")
             credit = Account.objects.get(id="6c2438a6-4d08-4db8-9440-bbfd84c42d96")
 
-            Ledger.transfer(10_000, credit, "Salary", debit, "Initial transfer",)
+            Ledger.transfer(10_000, credit, "Salary", debit, "Initial transfer")
 
             return render(request, 'transfer_form.html', context)
         else:
