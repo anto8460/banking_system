@@ -14,44 +14,6 @@
     </head>
     <body>
         <div class="container">
-            <div class="navbar-container">
-                <nav class="navbar navbar-expand-lg navbar-light bg-white">
-                    <a class="navbar-brand" href="/">ANFA Bank</a>
-                    <button class="navbar-toggler"
-                            type="button"
-                            data-toggle="collapse"
-                            data-target="#navbarText"
-                            aria-controls="navbarText"
-                            aria-expanded="false"
-                            aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarText">
-                        <ul class="navbar-nav mr-auto">
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">Features</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">Pricing</a>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
-                <span class="navbar-text">
-                    <i class="fa-solid fa-user"></i>
-                    <a href="{% url 'banking_system_app:home' %}">{{ user.first_name }} {{ user.last_name }}</a>
-                    <a href="{% url 'login_app:logout' %}" class="logout"><i class="fa-solid fa-right-from-bracket"></i></a>
-                </span>
-            </div>
-            <h1>Welcome, {{ user.first_name }}!</h1>
-            <h2>Existing Accounts:</h2>
-            <p>{{ account.account_type.type }} : {{ account.account_number }}</p>
-            
-            <h2>Current Balance</h2>
-            <p>{{ balance }}</p>
             <div class="container">
                 <div class="navbar-container">
                     <nav class="navbar navbar-expand-lg navbar-light bg-white">

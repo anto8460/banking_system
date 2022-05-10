@@ -66,9 +66,9 @@ WSGI_APPLICATION = 'banking_system.wsgi.application'
 
 DATABASES = {
     'default': {
-        'NAME': config('DBNAME'),
+        'NAME': config('NAME'),
         'ENGINE': config('ENGINE'),
-        'USER': config('USERNAME'),
+        'USER': config('USER1'),
         'PASSWORD': config('PASSWORD'),
         'HOST': config('HOST'),
         'PORT': config('PORT'),

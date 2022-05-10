@@ -1,8 +1,8 @@
-from multiprocessing.dummy.connection import Client
-from django.http import HttpResponse
+
 from .models import Account, Ledger
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
 
 @login_required(login_url='/login')
@@ -23,20 +23,14 @@ def home(request):
             context = {
                 'user': user,
                 'accounts': accounts
-            accounts = Account.objects.filter(user_id=user)
-
-            context = {
-                'user': user,
-                'accounts': accounts,
             }
-
             # We render the customer's homepage.
             return render(request, 'customer_home.html', context)
 
         # If the user is an employee
         else:            
             clients_array = []
-            clients = User.objects.filter(is_staff = False)[:5]
+            clients = User.objects.filter(is_staff=False)[:5]
             for client in clients:
                 number_of_accounts = Account.objects.filter(user_id=client.id).count()
                 clients_array.append(
@@ -45,7 +39,7 @@ def home(request):
                         'number_of_accounts': number_of_accounts
                     }
                 )
-                
+
             accounts_array = [] 
             accounts = Account.objects.all()[:5]
             for account in accounts:
@@ -56,15 +50,16 @@ def home(request):
                         'user': account_user
                     }
                 )
-                
+  
             context = {
                 'user': user,
                 'clients': clients_array,
                 'accounts': accounts_array
             }
-            
+
             # We render the employee's homepage.
             return render(request, 'employee_home.html', context)
+
 
 @login_required(login_url='/clients')
 def clients(request):
