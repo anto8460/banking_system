@@ -32,7 +32,7 @@
                                 <a class="nav-link" href="/">Overview</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">Clients</a>
+                                <a class="nav-link" href="{% url 'banking_system_app:clients' %}">Clients</a>
                             </li>
                             {% if user.is_superuser %}
                                 <li class="nav-item">
@@ -56,29 +56,62 @@
             <div class="main">
                 <table class="admin-section">
                     <thead class="admin-section-title">
-                        <th colspan="3">Clients overview</th>
+                        <th colspan="4">Clients overview</th>
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Number of accounts</th>
+                            <th>Edit</th>
                         </tr>
                     </thead>
                     <tbody class="admin-section-content">
                         {% for client in clients %}
                             <tr>
                                 <td>
-                                    {{ client.first_name }} {{ client.last_name }}
+                                    {{ client.details.first_name }} {{ client.details.last_name }}
                                 </td>
                                 <td>
-                                    {{ client.email }}
+                                    {{ client.details.email }}
+                                </td>
+                                <td>                                    
+                                    {{ client.number_of_accounts}}
                                 </td>
                                 <td>
-                                    {{ client.number_of_accounts }}
+                                    <a style="color: white; text-align: center;" href="#"><i class="fa-solid fa-pen-to-square"></i></a>
                                 </td>
                             </tr>
                         {% endfor %}
                     </tbody>
-                </table>                
+                </table>
+                <table class="admin-section">
+                    <thead class="admin-section-title">
+                        <th colspan="4">Accounts overview</th>
+                        <tr>
+                            <th>Number</th>
+                            <th>Type</th>
+                            <th>Owner's name</th>
+                            <th>Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody class="admin-section-content">
+                        {% for account in accounts %}
+                            <tr>
+                                <td>
+                                    {{ account.details.account_number }}
+                                </td>
+                                <td>
+                                    {{ account.details.account_type.type }}
+                                </td>
+                                <td>                                    
+                                    {{ account.user.first_name}} {{ account.user.last_name}}
+                                </td>
+                                <td>
+                                    <a style="color: white; text-align: center;" href="#"><i class="fa-solid fa-pen-to-square"></i></a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </body>

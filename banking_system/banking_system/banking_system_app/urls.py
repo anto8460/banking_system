@@ -6,4 +6,5 @@ app_name = 'banking_system_app'
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('clients', views.clients, name='clients')
 ]

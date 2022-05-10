@@ -62,6 +62,7 @@
 .admin-section {
     width: 100%;
     margin-top: 1rem;
+    margin-bottom: 2rem;
 }
 
 .admin-section-title tr:first-of-type {
