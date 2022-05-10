@@ -53,11 +53,11 @@
                 <form action="" method="POST">
                     {% csrf_token %}
                     <h1>Transfer</h1>
-                    <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+                    <select name="account_id" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
                         <option selected>Choose your account</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
+                        {% for account in accounts %}
+                            <option value={{account.id}}>{{account.account_name}}</option>
+                        {% endfor %}
                     </select>
                     <input type="text" class="form-control" name="recipient" placeholder="Recipient's account number" />
                     <br>

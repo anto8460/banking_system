@@ -59,10 +59,10 @@
                                 <th scope="col">Date</th>
                             </tr>
                             </thead>
-                            {% for idx, transaction in transactions %}
+                            {% for transaction in accounts.movements %}
                             <tbody>
                                 <tr>
-                                <th scope="row">{{ idx }}</th>
+                                <th scope="row"></th>
                                 <td>{{ transaction.id }}</td>
                                 <td>{{ transaction.amount }}</td>
                                 <td>{{ transaction.created_at }}</td>

@@ -1,6 +1,6 @@
 from multiprocessing.dummy.connection import Client
 from django.http import HttpResponse
-from .models import Account, User
+from .models import Account, Ledger
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
@@ -81,18 +81,13 @@ def account_info(request, account_id):
 
     context = {}
     account = Account.objects.get(id=account_id)
-    transactions_raw = account.get_transactions()
-    transactions = []
-
-    for idx, transaction in enumerate(transactions_raw):
-        transactions.append((idx, transaction))
 
     context = {
         'account': account,
-        'transactions': account.get_transactions()
     }
 
     return render(request, 'account_info.html', context)
+
 
 @login_required(login_url='/login')
 def transfer(request):
@@ -101,13 +96,24 @@ def transfer(request):
 
     if request.user and not request.user.is_anonymous:
 
-        user = user.request
+        user = request.user
 
         accounts = Account.objects.filter(user_id=user)
+
+        context = {
+            'accounts': accounts,
+        }
 
         if request.method == 'POST':
             print(request.POST['recipient'])
             print(request.POST['amount'])
+            print(request.POST['account_id'])
+
+
+            debit = Account.objects.get(id="c22f394d-0bea-465a-9b36-0ff92dee06c8")
+            credit = Account.objects.get(id="6c2438a6-4d08-4db8-9440-bbfd84c42d96")
+
+            Ledger.transfer(10_000, credit, "Salary", debit, "Initial transfer",)
 
             return render(request, 'transfer_form.html', context)
         else:
