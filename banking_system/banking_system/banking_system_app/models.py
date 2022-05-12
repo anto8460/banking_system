@@ -8,6 +8,7 @@ from .errors import InsufficientFunds
 
 
 class UID(models.Model):
+
     @classmethod
     @property
     def uid(cls):
@@ -34,7 +35,6 @@ class Account(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     account_type = models.ForeignKey(AccountType, models.DO_NOTHING)
     user_id = models.ForeignKey(User, models.DO_NOTHING)
-    account_number = models.CharField(unique=True, max_length=255)
     account_name = models.CharField(unique=False, max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True)
@@ -43,7 +43,7 @@ class Account(models.Model):
         db_table = 'accounts'
 
     def __str__(self):
-        return f'Account - {self.account_number}'
+        return f'Account - {self.id}'
 
     @property
     def movements(self) -> QuerySet:

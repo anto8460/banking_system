@@ -3,6 +3,7 @@ from .models import Account, Ledger
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 
 @login_required(login_url='/login')
@@ -94,9 +95,24 @@ def transfer(request):
             'accounts': accounts,
         }
         if request.method == 'POST':
-            print(request.POST['recipient'])
-            print(request.POST['amount'])
-            print(request.POST['account_id'])
+            try:
+                sender = Account.objects.get(id=request.POST['sender'])
+                recipient = Account.objects.get(id=request.POST['recipient'])
+
+                if sender == recipient:
+                    raise ValidationError("Recipient account number is the same as the sender")
+
+            except ValidationError as e:
+                context = {'error': e.message}
+                return render(request, 'transfer_form.html', context)
+
+            amount = request.POST['amount']
+            text = request.POST['text']
+
+            # Make transaction
+            Ledger.transfer(float(amount), sender, text, recipient, text)
+
+            context['success'] = 'true'
 
             return render(request, 'transfer_form.html', context)
         else:

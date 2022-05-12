@@ -25,13 +25,11 @@ class Command(BaseCommand):
             central_account_ipo = Account.objects.create(
                 account_type=rank,
                 user_id=bank_user,
-                account_number="IBAN-001",
                 account_name="BANK IPO Account")
 
             central_account_ops = Account.objects.create(
                 account_type=rank,
                 user_id=bank_user,
-                account_number="IBAN-002",
                 account_name="BANK OPS Account")
             central_account_ipo.save()
             central_account_ops.save()
@@ -85,7 +83,6 @@ class Command(BaseCommand):
             account = Account.objects.create(
                 account_type=rank,
                 user_id=user,
-                account_number=f"IBAN-{randint(0, 100)}",
                 account_name=username)
             account.save()
 
