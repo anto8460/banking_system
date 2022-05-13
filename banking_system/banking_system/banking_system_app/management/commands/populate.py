@@ -7,7 +7,7 @@ from banking_system_app.models import Account, Ledger, AccountType, UserInformat
 from banking_system_app.AccountRanks import AccountRanks
 from django.utils import timezone
 from django.conf import settings
-from django.utils.timezone import make_aware
+
 
 class Command(BaseCommand):
     help = 'Populates the database with a central account and 2 users'
@@ -87,4 +87,3 @@ class Command(BaseCommand):
             account.save()
 
             Ledger.transfer(10_000, ops_account, "Initial ammount", account, "Initial ammount")
-
