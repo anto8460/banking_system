@@ -47,31 +47,30 @@
                         <a href="#" class="logout"><i class="fa-solid fa-right-from-bracket"></i></a>
                     </span>
                 </div>
-                <h1>Welcome, {{ user.first_name }}!</h1>
+                <h1>Account: {{account.account_name}}</h1>
+                <h2>Account number: {{account.id}}</h2>
                     <table class="table table-striped">
-                        <h3>Select account</h3>
-                        <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Account number</th>
-                                <th scope="col">Type</th>
-                                <th scope="col">Balance</th>
-                            </tr>
-                            </thead>
-                            {% for account in accounts %}
-                            <tbody>
+                        <h3>Transaction History</h3>
+                            <thead>
                                 <tr>
-                                    <th scope="row">{{ idx }}</th>
-                                    <td><a href="account/{{account.id}}">{{ account.account_name }}</a></td>
-                                    <td><a href="account/{{account.id}}">{{ account.id }}</a></td>
-                                    <td><a href="account/{{account.id}}">{{ account.account_type }}<a/></td>
-                                    <td><a href="account/{{account.id}}">{{ account.balance }}</a></td>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Transaction Id</th>
+                                    <th scope="col">Amount</th>
+                                    <th scope="col">Date</th>
                                 </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in account.movements %}
+                                <tr>
+                                    <th scope="row"></th>
+                                    <td>{{ transaction.id }}</td>
+                                    <td>{{ transaction.amount }}</td>
+                                    <td>{{ transaction.created_at }}</td>
+                                </tr>
+                                {% endfor %}
                             </tbody>
-                            {% endfor %}
-                    </table>                 
-                </div>
+                    </table>
+                <a  class="btn btn-info" href="/transfer">Transfer</a>
             </div>
         </div>
     </body>
