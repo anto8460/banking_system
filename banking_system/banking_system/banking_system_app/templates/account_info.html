@@ -23,5 +23,8 @@
                         {% endfor %}
                     </tbody>
             </table>
-        <a  class="btn btn-info" href="/transfer">Transfer</a>
+        <a  class="btn btn-info" href="/transfer" style="float: right;">Transfer</a>
+        {% if can_loan %}
+            <a  class="btn btn-info" href="/loan/{{account.id}}" style="float: right; margin-right: 10px">Loan</a>
+        {% endif %}
     {% endblock %}

@@ -3,8 +3,10 @@ from decimal import Decimal
 from django.contrib.auth.models import User
 from django.db import models, transaction
 from django.db.models.query import QuerySet
+from django.utils import timezone
 import uuid
-from .errors import InsufficientFunds
+from .errors import InsufficientFunds, UnAuthorized
+from .AccountRanks import AccountRanks
 
 
 class UID(models.Model):
@@ -52,6 +54,21 @@ class Account(models.Model):
     @property
     def balance(self) -> Decimal:
         return self.movements.aggregate(models.Sum('amount'))['amount__sum'] or Decimal(0)
+
+    def make_loan(self, amount):
+
+        if self.account_type.type == AccountRanks.BASIC.value:
+            raise UnAuthorized("Credit account can't loan from the bank")
+
+        debit_account = Account(
+            account_type=AccountType.objects.get(type=AccountRanks.LOAN.value),
+            user_id=self.user_id,
+            account_name='Loan',
+            created_at=timezone.now())
+
+        debit_account.save()
+
+        Ledger.transfer(amount, debit_account, 'loan', self, 'loan', is_loan=True)
 
 
 class BankDetail(models.Model):

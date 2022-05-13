@@ -1,5 +1,7 @@
 
+import re
 from .models import Account, Ledger
+from .AccountRanks import AccountRanks
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -72,10 +74,12 @@ def account_info(request, account_id):
     context = {}
     account = Account.objects.get(id=account_id)
 
+    can_loan = False if account.account_type.type == AccountRanks.BASIC.value else True
+
     context = {
         'account': account,
+        'can_loan': can_loan,
     }
-    print(account.movements[0])
 
     return render(request, 'account_info.html', context)
 
@@ -85,6 +89,17 @@ def loan(request, account_id):
 
     context = {}
     account = Account.objects.get(id=account_id)
+
+    if account.account_type.type == AccountRanks.BASIC.value:
+        context = {
+            'error': 'This account can NOT loan money from the bank'
+        }
+        return render(request, 'loan.html', context)
+
+    if request.method == 'POST':
+        amount = request.POST['amount']
+
+        account.make_loan(int(amount))
 
     return render(request, 'loan.html', context)
 
