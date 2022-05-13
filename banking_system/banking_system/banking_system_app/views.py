@@ -81,6 +81,15 @@ def account_info(request, account_id):
 
 
 @login_required(login_url='/login')
+def loan(request, account_id):
+
+    context = {}
+    account = Account.objects.get(id=account_id)
+
+    return render(request, 'loan.html', context)
+
+
+@login_required(login_url='/login')
 def transfer(request):
 
     context = {}

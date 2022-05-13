@@ -1,77 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Home</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
-              rel="stylesheet"
-              integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
-              crossorigin="anonymous">
-        <link rel="stylesheet" href="../static/style.css">
-        <script src="https://kit.fontawesome.com/dfbfe5f345.js" crossorigin="anonymous"></script>
-    </head>
-    <body>
-        <div class="container">
-            <div class="container">
-                <div class="navbar-container">
-                    <nav class="navbar navbar-expand-lg navbar-light bg-white">
-                        <a class="navbar-brand" href="/">ANFA Bank</a>
-                        <button class="navbar-toggler"
-                                type="button"
-                                data-toggle="collapse"
-                                data-target="#navbarText"
-                                aria-controls="navbarText"
-                                aria-expanded="false"
-                                aria-label="Toggle navigation">
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
-                        <div class="collapse navbar-collapse" id="navbarText">
-                            <ul class="navbar-nav mr-auto">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">Home</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">Features</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">Pricing</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </nav>
-                    <span class="navbar-text">
-                        <i class="fa-solid fa-user"></i>
-                        <a href="#">{{ user.first_name }} {{ user.last_name }}</a>
-                        <a href="#" class="logout"><i class="fa-solid fa-right-from-bracket"></i></a>
-                    </span>
-                </div>
-                <h1>Account: {{account.account_name}}</h1>
-                <h2>Account number: {{account.id}}</h2>
-                    <table class="table table-striped">
-                        <h3>Transaction History</h3>
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Transaction Id</th>
-                                    <th scope="col">Amount</th>
-                                    <th scope="col">Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for transaction in account.movements %}
-                                <tr>
-                                    <th scope="row"></th>
-                                    <td>{{ transaction.id }}</td>
-                                    <td>{{ transaction.amount }}</td>
-                                    <td>{{ transaction.created_at }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                    </table>
-                <a  class="btn btn-info" href="/transfer">Transfer</a>
-            </div>
-        </div>
-    </body>
-</html>
+{% extends "customer_nav_bar_template.html"%}
+    {% block content %}
+        <h1>Account: {{account.account_name}}</h1>
+        <h2>Account number: {{account.id}}</h2>
+            <table class="table table-striped">
+                <h3>Transaction History</h3>
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Transaction Id</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in account.movements %}
+                        <tr>
+                            <th scope="row"></th>
+                            <td>{{ transaction.id }}</td>
+                            <td>{{ transaction.amount }}</td>
+                            <td>{{ transaction.created_at }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+            </table>
+        <a  class="btn btn-info" href="/transfer">Transfer</a>
+    {% endblock %}
