@@ -37,8 +37,7 @@ class Command(BaseCommand):
             Ledger.transfer(
                 10_000_000, central_account_ipo, "Initial amount", central_account_ops, "Initial amount", is_loan=True)
 
-            self.create_users(2, central_account_ops)
-            self.create_users(2, central_account_ops, is_staff=True)
+            self.create_users(central_account_ops)
 
         except CommandError as e:
             print(e)
@@ -51,19 +50,26 @@ class Command(BaseCommand):
                 obj = AccountType.objects.create(type=type.value)
                 obj.save()
 
-    def create_users(self, num, ops_account, is_staff=False, account_rank: AccountRanks = AccountRanks.BASIC):
-        for i in range(num):
-            if not is_staff:
-                username = f"Customer-{i}"
-                email = f"customer{i}@test.com"
+    def create_users(self, ops_account, account_rank: AccountRanks = AccountRanks.BASIC):
+        names = ['Rafael', 'Anton', 'Mary', 'Sergei', 'Carina', 'Marcos', 'Jonathan', 'Pedro']
+        last_names = ['Barbieru', 'Kamenov', 'Johnson', 'Vladistok', 'Carjila', 'Cuadrado', 'Space', 'Sánchez']
+        for index,name in enumerate(names):
+            first_name = name
+            last_name = last_names[index]
+                        
+            if index%2 == 0:
+                is_staff = True
+                email = f"{first_name[0].lower()}{last_name[0].lower()}@anfa.com"
             else:
-                username = f"Employee-{i}"
-                email = f"employee{i}@test.com"
+                is_staff = False
+                email = f"{first_name[0].lower()}{last_name[0].lower()}@gmail.com"
+
+            username = email
 
             user = User.objects.create(
                 username=username,
-                first_name=username,
-                last_name=f"{username}ov",
+                first_name=first_name,
+                last_name=last_name,
                 email=email, is_staff=is_staff)
             user.set_password('12345678')
             user.save()
