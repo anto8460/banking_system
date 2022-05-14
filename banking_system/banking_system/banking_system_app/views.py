@@ -1,6 +1,6 @@
 from .models import Account, Ledger
 from django.db.models import Q
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -127,7 +127,17 @@ def show_clients_overview(request):
         return render(request, 'auth_error.html')
     
 def show_user(request, user_id):
-    return render(request, 'auth_error.html')
+    current_user = User.objects.filter(id=user_id)
+    if (len(current_user) > 0):
+        current_user = current_user[0]
+        user_accounts = Account.objects.filter(user_id_id=user_id)
+        context = {
+            'current_user': current_user,
+            'accounts': user_accounts
+        }
+        return render(request, 'admin_user_details.html', context)
+    else:
+        return render(request, '404.html')    
 
 def show_account(request, account_id):
     return render(request, 'auth_error.html')
@@ -159,3 +169,20 @@ def show_employees_overview(request):
     else:
         # If the user is not an employee, we render an authorization error
         return render(request, 'auth_error.html')
+
+def update_user(request, user_id):
+    if request.method == 'POST':
+        user_to_update = User.objects.filter(id=user_id)
+        if user_to_update:
+            user_to_update = user_to_update[0]
+            post_data = request.POST
+            user_to_update.first_name = post_data['first_name']
+            user_to_update.last_name = post_data['last_name']
+            user_to_update.email = post_data['email']
+            user_to_update.save()
+    return redirect('banking_system_app:clients')
+
+def delete_account(request, account_id):
+    if request.method == 'POST':
+        account_to_delete = Account.objects.filter(id=account_id).delete()
+    return redirect()

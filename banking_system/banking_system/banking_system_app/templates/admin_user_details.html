@@ -1,9 +1,50 @@
+{% load date_utils %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
         {% include 'partials/_header.html' with title='ANFA Bank | Admin Panel' %}
     </head>
     <body>
-        {{ user.first_name }} {{ user.last_name }}
+        {% include 'partials/_admin_navbar.html' with selected='clients' %}
+        <div class="container">
+            <form action="{% url 'banking_system_app:update_user' user_id=current_user.id %}"
+                  method="POST">
+                {% csrf_token %}
+                <h4>Details:</h4>
+                <div>
+                    <label>First name:</label>
+                    <input name="first_name" type="text" value="{{ current_user.first_name }}">
+                </div>
+                <div>
+                    <label>Last name:</label>
+                    <input name="last_name" type="text" value="{{ current_user.last_name }}">
+                </div>
+                <div>
+                    <label>Email:</label>
+                    <input name="email" type="text" value="{{ current_user.email }}">
+                </div>
+                <div>
+                    {% if current_user.last_login %}
+                        <label>Last login: {% european_date current_user.last_login %}</label>
+                    {% else %}
+                        <label>Last login: Never</label>
+                    {% endif %}
+                </div>
+                {% if accounts|length > 0 %}
+                    <h4>Accounts:</h4>
+                    {% for account in accounts %}
+                        <div>
+                            <div>ID: {{ account.id }}</div>
+                            <div>Type: {{ account.account_type.type.capitalize }}</div>
+                            <a href="#"><i class="fa-solid fa-trash"></i></a>
+                        </div>
+                    {% endfor %}
+                    <div>
+                        <a href="{% url 'banking_system_app:delete_account' account_id=account.id %}">Add new account</a>
+                    </div>
+                {% endif %}
+                <input type="submit" value="Save"/>
+            </form>
+        </div>
     </body>
 </html>
