@@ -53,7 +53,6 @@
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
-                                <th scope="col">Name</th>
                                 <th scope="col">Account number</th>
                                 <th scope="col">Type</th>
                                 <th scope="col">Balance</th>
@@ -63,9 +62,8 @@
                             <tbody>
                                 <tr>
                                     <th scope="row">{{ idx }}</th>
-                                    <td><a href="account/{{account.id}}">{{ account.account_name }}</a></td>
                                     <td><a href="account/{{account.id}}">{{ account.id }}</a></td>
-                                    <td><a href="account/{{account.id}}">{{ account.account_type }}<a/></td>
+                                    <td><a href="account/{{account.id}}">{{ account.account_type.type.capitalize }}<a/></td>
                                     <td><a href="account/{{account.id}}">{{ account.balance }}</a></td>
                                 </tr>
                             </tbody>
