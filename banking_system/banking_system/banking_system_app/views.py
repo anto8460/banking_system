@@ -34,6 +34,10 @@ def clients(request):
 def accounts(request):
     return show_accounts_overview(request)
 
+@login_required(login_url='/login')
+def employees(request):
+    return show_employees_overview(request)
+
 
 @login_required(login_url='/login')
 def account_info(request, account_id):
@@ -93,7 +97,7 @@ def show_clients_overview(request):
     if request.user.is_staff:
         
         clients_array = []
-        clients = User.objects.filter(is_staff=False)
+        clients = User.objects.filter(is_staff=False, is_active=True)
         
         for client in clients:
             number_of_accounts = Account.objects.filter(
@@ -123,6 +127,20 @@ def show_accounts_overview(request):
             'accounts': accounts
         }            
         return render(request, 'accounts.html', context)           
+            
+    else:
+        # If the user is not an employee, we render an authorization error
+        return render(request, 'auth_error.html')
+    
+def show_employees_overview(request):
+    # We make sure the user is an employee and administrator.
+    if request.user.is_staff and request.user.is_superuser:
+        employees = User.objects.filter(is_staff=True, is_active=True)
+        context = {
+            'user': request.user,
+            'employees': employees
+        }            
+        return render(request, 'employees.html', context)           
             
     else:
         # If the user is not an employee, we render an authorization error
