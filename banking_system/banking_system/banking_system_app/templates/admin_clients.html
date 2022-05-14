@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% include 'partials/_header.html' with title='ANFA Bank | Admin Panel' %}
+    </head>
+    <body class="employees">
+        {% include 'partials/_admin_navbar.html' with selected='clients'%}
+        <div class="container">
+            <div class="main">
+                <table class="admin-section">
+                    <thead class="admin-section-title">
+                        <th colspan="4">Clients overview</th>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Number of accounts</th>
+                            <th>Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody class="admin-section-content">
+                        {% for client in clients %}                        
+                            <tr>
+                                <td>
+                                    {{ client.details.first_name }} {{ client.details.last_name }}
+                                </td>
+                                <td>
+                                    {{ client.details.email }}
+                                </td>
+                                <td>                                    
+                                    {{ client.number_of_accounts}}
+                                </td>
+                                <td>
+                                    <a style="color: white; text-align: center;" href="{% url 'banking_system_app:user_details' user_id=client.details.id %}"><i class="fa-solid fa-pen-to-square"></i></a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>                
+            </div>
+        </div>
+    </body>
+</html>

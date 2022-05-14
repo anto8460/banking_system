@@ -26,9 +26,17 @@ def home(request):
             return show_clients_overview(request)
 
 
-@login_required(login_url='/clients')
+@login_required(login_url='/login')
 def clients(request):
     return show_clients_overview(request)
+
+@login_required(login_url='/login')
+def client_details(request, user_id):
+    return show_user(request, user_id)
+
+@login_required(login_url='/login')
+def account_details(request, account_id):
+    return show_account(request, account_id)
     
 @login_required(login_url='/login')
 def accounts(request):
@@ -112,11 +120,17 @@ def show_clients_overview(request):
                 'clients': clients_array
             }
             
-        return render(request, 'clients.html', context)           
+        return render(request, 'admin_clients.html', context)           
             
     else:
         # If the user is not an employee, we render an authorization error
         return render(request, 'auth_error.html')
+    
+def show_user(request, user_id):
+    return render(request, 'auth_error.html')
+
+def show_account(request, account_id):
+    return render(request, 'auth_error.html')
     
 def show_accounts_overview(request):
     # We make sure the user is an employee.
@@ -126,7 +140,7 @@ def show_accounts_overview(request):
             'user': request.user,
             'accounts': accounts
         }            
-        return render(request, 'accounts.html', context)           
+        return render(request, 'admin_accounts.html', context)           
             
     else:
         # If the user is not an employee, we render an authorization error
@@ -140,7 +154,7 @@ def show_employees_overview(request):
             'user': request.user,
             'employees': employees
         }            
-        return render(request, 'employees.html', context)           
+        return render(request, 'admin_employees.html', context)           
             
     else:
         # If the user is not an employee, we render an authorization error
