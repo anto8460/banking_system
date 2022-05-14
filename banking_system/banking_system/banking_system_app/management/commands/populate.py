@@ -57,7 +57,7 @@ class Command(BaseCommand):
                 username = f"Customer-{i}"
                 email = f"customer{i}@test.com"
             else:
-                username = f"Employe-{i}"
+                username = f"Employee-{i}"
                 email = f"employee{i}@test.com"
 
             user = User.objects.create(
