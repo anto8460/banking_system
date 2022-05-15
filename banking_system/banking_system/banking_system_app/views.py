@@ -17,7 +17,7 @@ def home(request):
         user = request.user
         # If the user is a customer.
         if not user.is_staff:
-            accounts = Account.objects.filter(user_id=user).all()
+            accounts = Account.objects.filter(user_id=user, is_active=True).all()
             context = {'user': user, 'accounts': accounts}
             # We render the customer's homepage.
             return render(request, 'customer_home.html', context)
@@ -51,7 +51,7 @@ def employees(request):
 def account_info(request, account_id):
 
     context = {}
-    account = Account.objects.get(id=account_id)
+    account = Account.objects.get(id=account_id, is_active=True)
 
     context = {
         'account': account,
@@ -70,7 +70,7 @@ def transfer(request):
 
         user = request.user
 
-        accounts = Account.objects.filter(user_id=user)
+        accounts = Account.objects.filter(user_id=user, is_active=True)
 
         context = {
             'accounts': accounts,
@@ -109,7 +109,7 @@ def show_clients_overview(request):
         
         for client in clients:
             number_of_accounts = Account.objects.filter(
-                user_id=client.id).count()
+                user_id=client.id, is_active=True).count()
             clients_array.append({
                 'details': client,
                 'number_of_accounts': number_of_accounts
@@ -130,7 +130,7 @@ def show_user(request, user_id):
     current_user = User.objects.filter(id=user_id)
     if (len(current_user) > 0):
         current_user = current_user[0]
-        user_accounts = Account.objects.filter(user_id_id=user_id)
+        user_accounts = Account.objects.filter(user_id_id=user_id, is_active=True)
         context = {
             'current_user': current_user,
             'accounts': user_accounts
@@ -145,7 +145,7 @@ def show_account(request, account_id):
 def show_accounts_overview(request):
     # We make sure the user is an employee.
     if request.user.is_staff:
-        accounts = Account.objects.filter(~Q(user_id=1))           
+        accounts = Account.objects.filter(~Q(user_id=1), is_active=True)           
         context = {
             'user': request.user,
             'accounts': accounts
@@ -182,7 +182,10 @@ def update_user(request, user_id):
             user_to_update.save()
     return redirect('banking_system_app:clients')
 
-def delete_account(request, account_id):
-    if request.method == 'POST':
-        account_to_delete = Account.objects.filter(id=account_id).delete()
-    return redirect()
+def delete_account(request, account_id, user_id):
+    account_to_delete = Account.objects.filter(id=account_id)
+    if (account_to_delete):
+        account_to_delete = account_to_delete[0]
+        account_to_delete.is_active = False
+        account_to_delete.save()    
+    return redirect(f"/user/{ user_id }")

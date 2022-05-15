@@ -14,5 +14,5 @@ urlpatterns = [
     path('transfer', views.transfer, name='transfer'),
     path('account/<account_id>', views.account_info, name='account_info'),
     path('update_user/<user_id>', views.update_user, name='update_user'),
-    path('delete_account/<account_id>', views.delete_account, name='delete_account'),
+    path('delete_account/<account_id>/<user_id>', views.delete_account, name='delete_account'),
 ]

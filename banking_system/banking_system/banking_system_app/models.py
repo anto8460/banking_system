@@ -36,6 +36,7 @@ class Account(models.Model):
     account_type = models.ForeignKey(AccountType, models.DO_NOTHING)
     user_id = models.ForeignKey(User, models.DO_NOTHING)
     account_name = models.CharField(unique=False, max_length=255)
+    is_active = models.BooleanField(unique=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True)
 
