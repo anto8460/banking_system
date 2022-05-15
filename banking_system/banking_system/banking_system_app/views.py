@@ -1,4 +1,4 @@
-from .models import Account, Ledger
+from .models import Account, AccountType, Ledger
 from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -104,21 +104,34 @@ def show_clients_overview(request):
     # We make sure the user is an employee.
     if request.user.is_staff:
         
-        clients_array = []
-        clients = User.objects.filter(is_staff=False, is_active=True)
+        active_clients_array = []
+        unactive_clients_array = []
+        active_clients = User.objects.filter(is_staff=False, is_active=True)
+        unactive_clients = User.objects.filter(is_staff=False, is_active=False)
         
-        for client in clients:
+        for client in active_clients:
             number_of_accounts = Account.objects.filter(
                 user_id=client.id, is_active=True).count()
-            clients_array.append({
+            
+            active_clients_array.append({
                 'details': client,
                 'number_of_accounts': number_of_accounts
             })
-           
-            context = {
-                'user': request.user,
-                'clients': clients_array
-            }
+        
+        for client in unactive_clients:
+            number_of_accounts = Account.objects.filter(
+                user_id=client.id, is_active=True).count()
+            
+            unactive_clients_array.append({
+                'details': client,
+                'number_of_accounts': number_of_accounts
+            })
+        
+        context = {
+            'user': request.user,
+            'active_clients': active_clients_array,
+            'unactive_clients': unactive_clients_array
+        }
             
         return render(request, 'admin_clients.html', context)           
             
@@ -140,15 +153,29 @@ def show_user(request, user_id):
         return render(request, '404.html')    
 
 def show_account(request, account_id):
-    return render(request, 'auth_error.html')
+    account = Account.objects.filter(id=account_id)
+    if account:
+        account = account[0]
+        owner = User.objects.filter(id=account.user_id_id)
+        if owner:
+            owner = owner[0]
+            account_types = AccountType.objects.all()
+            context = {
+                'account': account,
+                'owner': owner,
+                'account_types': account_types
+            }
+    return render(request, 'admin_account_details.html', context)
     
 def show_accounts_overview(request):
     # We make sure the user is an employee.
     if request.user.is_staff:
-        accounts = Account.objects.filter(~Q(user_id=1), is_active=True)           
+        active_accounts = Account.objects.filter(~Q(user_id=1), is_active=True)
+        unactive_accounts = Account.objects.filter(~Q(user_id=1), is_active=False)
         context = {
             'user': request.user,
-            'accounts': accounts
+            'active_accounts': active_accounts,
+            'unactive_accounts': unactive_accounts
         }            
         return render(request, 'admin_accounts.html', context)           
             
@@ -179,6 +206,7 @@ def update_user(request, user_id):
             user_to_update.first_name = post_data['first_name']
             user_to_update.last_name = post_data['last_name']
             user_to_update.email = post_data['email']
+            user_to_update.username = post_data['email']
             user_to_update.save()
     return redirect('banking_system_app:clients')
 
@@ -189,3 +217,33 @@ def delete_account(request, account_id, user_id):
         account_to_delete.is_active = False
         account_to_delete.save()    
     return redirect(f"/user/{ user_id }")
+
+def delete_user(request, user_id):
+    user_to_delete = User.objects.filter(id=user_id)
+    if (user_to_delete):
+        user_to_delete = user_to_delete[0]
+        user_to_delete.is_active = False
+        user_to_delete.save()
+    return redirect(f"/user/{ user_id }")
+
+def revive_user(request, user_id):
+    user_to_revive = User.objects.filter(id=user_id)
+    if (user_to_revive):
+        user_to_revive = user_to_revive[0]
+        user_to_revive.is_active = True
+        user_to_revive.save()
+    return redirect(f"/user/{ user_id }")
+
+def update_account(request, account_id):
+    if request.method == 'POST':
+        account_to_update = Account.objects.filter(id=account_id)
+        if account_to_update:
+            account_to_update = account_to_update[0]
+            post_data = request.POST
+            
+            # Getting the account type ID
+            new_account_type_id = AccountType.objects.get(type=post_data['new_account_type'])
+            
+            account_to_update.account_type_id = new_account_type_id.id
+            account_to_update.save()
+    return redirect('banking_system_app:accounts')

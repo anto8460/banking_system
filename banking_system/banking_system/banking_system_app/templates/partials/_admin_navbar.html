@@ -41,7 +41,7 @@
         </nav>
         <span class="employees-navbar-text">
             <i class="fa-solid fa-user"></i>
-            <a href="{% url 'banking_system_app:home' %}">
+            <a href="/user/{{ user.id }}">
                 {{ user.first_name }} {{ user.last_name }}
                 {% if user.is_superuser %}(Admin){% endif %}
             </a>

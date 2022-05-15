@@ -1,3 +1,4 @@
+{% load humanize %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -10,7 +11,7 @@
                 
                 <table class="admin-section">
                     <thead class="admin-section-title">
-                        <th colspan="5">Accounts overview</th>
+                        <th colspan="5">Active accounts overview</th>
                         <tr>
                             <th>ID</th>
                             <th>Type</th>
@@ -19,7 +20,37 @@
                         </tr>
                     </thead>
                     <tbody class="admin-section-content">
-                        {% for account in accounts %}
+                        {% for account in active_accounts %}
+                            <tr>
+                                <td>
+                                    {{ account.id }}
+                                </td>
+                                <td>
+                                    {{ account.account_type.type.capitalize }}
+                                </td>
+                                <td>                                    
+                                    {{ account.balance|intcomma }} DKK
+                                </td>
+                                <td>
+                                    <a style="color: white; text-align: center;" href="{% url 'banking_system_app:account_details' account_id=account.id %}"><i class="fa-solid fa-pen-to-square"></i></a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <table class="admin-section">
+                    <thead class="admin-section-title">
+                        <th colspan="5">Unactive accounts overview</th>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Balance</th>
+                            <th>Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody class="admin-section-content">
+                        {% for account in unactive_accounts %}
                             <tr>
                                 <td>
                                     {{ account.id }}
