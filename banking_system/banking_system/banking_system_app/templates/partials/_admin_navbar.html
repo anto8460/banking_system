@@ -1,0 +1,51 @@
+<div class="employees-navbar-container">
+    <div class="container employees-flex-between">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <a class="navbar-brand" href="/">ANFA Bank | Employees Portal</a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarText"
+                    aria-controls="navbarText"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        {% if selected == 'clients' %}
+                        <a class="nav-link nav-link-selected" href="{% url 'banking_system_app:clients' %}">Clients</a>
+                        {% else %}
+                        <a class="nav-link" href="{% url 'banking_system_app:clients' %}">Clients</a>
+                        {% endif %}
+                    </li>
+                    <li class="nav-item">
+                        {% if selected == 'accounts' %}
+                        <a class="nav-link nav-link-selected" href="{% url 'banking_system_app:accounts' %}">Accounts</a>
+                        {% else %}
+                        <a class="nav-link" href="{% url 'banking_system_app:accounts' %}">Accounts</a>
+                        {% endif %}
+                    </li>
+                    {% if user.is_superuser %}
+                        <li class="nav-item">
+                            {% if selected == 'employees' %}
+                            <a class="nav-link nav-link-selected" href="{% url 'banking_system_app:employees' %}">Employees</a>
+                            {% else %}
+                            <a class="nav-link" href="{% url 'banking_system_app:employees' %}">Employees</a>
+                            {% endif %}
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+        <span class="employees-navbar-text">
+            <i class="fa-solid fa-user"></i>
+            <a href="/user/{{ user.id }}">
+                {{ user.first_name }} {{ user.last_name }}
+                {% if user.is_superuser %}(Admin){% endif %}
+            </a>
+            <a href="{% url 'login_app:logout' %}" class="logout"><i class="fa-solid fa-right-from-bracket"></i></a>
+        </span>
+    </div>
+</div>

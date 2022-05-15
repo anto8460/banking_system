@@ -9,6 +9,11 @@
     color: rgba(0, 0, 0, 0.55);
 }
 
+.nav-link-selected {
+    color: rgba(255, 255, 255, 1) !important;
+    text-decoration: underline;
+}
+
 .employees-navbar-container {
     width: 100%;
     display: flex;
@@ -100,6 +105,6 @@
     background-color: #121212;
 }
 
-.admin-section-content tr:nth-child(2n+2) {
+.admin-section-content tr:nth-child(even) {
     background-color: #252525;
 }
