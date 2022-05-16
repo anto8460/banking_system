@@ -5,3 +5,6 @@ PASSWORD=password
 HOST=ip_host
 PORT=port
 SECRET_KEY=secret_key
+ACCOUNT_SID=
+AUTH_TOKEN=
+PHONE_NUMBER=
