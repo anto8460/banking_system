@@ -65,6 +65,7 @@ class Account(models.Model):
             account_type=AccountType.objects.get(type=AccountRanks.LOAN.value),
             user_id=self.user_id,
             account_name='Loan',
+            is_active=True,
             created_at=timezone.now())
 
         debit_account.save()

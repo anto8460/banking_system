@@ -25,12 +25,14 @@ class Command(BaseCommand):
             central_account_ipo = Account.objects.create(
                 account_type=rank,
                 user_id=bank_user,
-                account_name="BANK IPO Account")
+                account_name="BANK IPO Account",
+                is_active=True)
 
             central_account_ops = Account.objects.create(
                 account_type=rank,
                 user_id=bank_user,
-                account_name="BANK OPS Account")
+                account_name="BANK OPS Account",
+                is_active=True)
             central_account_ipo.save()
             central_account_ops.save()
 
@@ -53,11 +55,11 @@ class Command(BaseCommand):
     def create_users(self, ops_account, account_rank: AccountRanks = AccountRanks.BASIC):
         names = ['Rafael', 'Anton', 'Mary', 'Sergei', 'Carina', 'Marcos', 'Jonathan', 'Pedro']
         last_names = ['Barbieru', 'Kamenov', 'Johnson', 'Vladistok', 'Carjila', 'Cuadrado', 'Space', 'Sánchez']
-        for index,name in enumerate(names):
+        for index, name in enumerate(names):
             first_name = name
             last_name = last_names[index]
-                        
-            if index%2 == 0:
+
+            if index % 2 == 0:
                 is_staff = True
                 email = f"{first_name[0].lower()}{last_name[0].lower()}@anfa.com"
             else:
@@ -89,7 +91,8 @@ class Command(BaseCommand):
             account = Account.objects.create(
                 account_type=rank,
                 user_id=user,
-                account_name=username)
+                account_name=username,
+                is_active=True)
             account.save()
 
             Ledger.transfer(10_000, ops_account, "Initial ammount", account, "Initial ammount")

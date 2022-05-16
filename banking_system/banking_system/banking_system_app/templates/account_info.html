@@ -7,18 +7,20 @@
                     <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Transaction Id</th>
                             <th scope="col">Amount</th>
                             <th scope="col">Date</th>
+                            <th scope="col">Text</th>
+                            <th scope="col">Account</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for transaction in account.movements %}
                         <tr>
                             <th scope="row"></th>
-                            <td>{{ transaction.id }}</td>
                             <td>{{ transaction.amount }}</td>
                             <td>{{ transaction.created_at }}</td>
+                            <td>{{ transaction.text }}</td>
+                            <td>{{ transaction.account}}
                         </tr>
                         {% endfor %}
                     </tbody>

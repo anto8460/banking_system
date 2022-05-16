@@ -29,30 +29,25 @@ def home(request):
 
 
 @login_required(login_url='/login')
-def clients(request):
-    return show_clients_overview(request)
-
-@login_required(login_url='/login')
-def client_details(request, user_id):
-    return show_user(request, user_id)
-
-@login_required(login_url='/login')
-def account_details(request, account_id):
-    return show_account(request, account_id)
-    
-@login_required(login_url='/login')
-def accounts(request):
-    return show_accounts_overview(request)
-
-@login_required(login_url='/login')
-def employees(request):
-    return show_employees_overview(request)
-
-
-@login_required(login_url='/login')
 def account_info(request, account_id):
-
     context = {}
+
+    if request.user.is_staff:
+
+        account = Account.objects.filter(id=account_id)
+        if account:
+            account = account[0]
+            owner = User.objects.filter(id=account.user_id_id)
+            if owner:
+                owner = owner[0]
+                account_types = AccountType.objects.all()
+                context = {
+                    'account': account,
+                    'owner': owner,
+                    'account_types': account_types
+                }
+        return render(request, 'admin_account_details.html', context)
+
     account = Account.objects.get(id=account_id, is_active=True)
 
     can_loan = False if account.account_type.type == AccountRanks.BASIC.value else True
@@ -124,45 +119,47 @@ def transfer(request):
         else:
             return render(request, 'transfer_form.html', context)
 
+
 def show_clients_overview(request):
     # We make sure the user is an employee.
     if request.user.is_staff:
-        
+
         active_clients_array = []
         unactive_clients_array = []
         active_clients = User.objects.filter(is_staff=False, is_active=True)
         unactive_clients = User.objects.filter(is_staff=False, is_active=False)
-        
+
         for client in active_clients:
             number_of_accounts = Account.objects.filter(
                 user_id=client.id, is_active=True).count()
-            
+
             active_clients_array.append({
                 'details': client,
                 'number_of_accounts': number_of_accounts
             })
-        
+
         for client in unactive_clients:
             number_of_accounts = Account.objects.filter(
                 user_id=client.id, is_active=True).count()
-            
+
             unactive_clients_array.append({
                 'details': client,
                 'number_of_accounts': number_of_accounts
             })
-        
+
         context = {
             'user': request.user,
             'active_clients': active_clients_array,
             'unactive_clients': unactive_clients_array
         }
-            
-        return render(request, 'admin_clients.html', context)           
-            
+
+        return render(request, 'admin_clients.html', context)
+
     else:
         # If the user is not an employee, we render an authorization error
         return render(request, 'auth_error.html')
-    
+
+
 def show_user(request, user_id):
     current_user = User.objects.filter(id=user_id)
     if (len(current_user) > 0):
@@ -190,7 +187,8 @@ def show_account(request, account_id):
                 'account_types': account_types
             }
     return render(request, 'admin_account_details.html', context)
-    
+
+
 def show_accounts_overview(request):
     # We make sure the user is an employee.
     if request.user.is_staff:
@@ -200,13 +198,13 @@ def show_accounts_overview(request):
             'user': request.user,
             'active_accounts': active_accounts,
             'unactive_accounts': unactive_accounts
-        }            
-        return render(request, 'admin_accounts.html', context)           
-            
+        }
+        return render(request, 'admin_accounts.html', context)
     else:
         # If the user is not an employee, we render an authorization error
         return render(request, 'auth_error.html')
-    
+
+
 def show_employees_overview(request):
     # We make sure the user is an employee and administrator.
     if request.user.is_staff and request.user.is_superuser:
@@ -214,12 +212,13 @@ def show_employees_overview(request):
         context = {
             'user': request.user,
             'employees': employees
-        }            
-        return render(request, 'admin_employees.html', context)           
-            
+        }
+        return render(request, 'admin_employees.html', context)
+
     else:
         # If the user is not an employee, we render an authorization error
         return render(request, 'auth_error.html')
+
 
 def update_user(request, user_id):
     if request.method == 'POST':
@@ -234,6 +233,7 @@ def update_user(request, user_id):
             user_to_update.save()
     return redirect('banking_system_app:clients')
 
+
 def delete_account(request, account_id, user_id):
     account_to_delete = Account.objects.filter(id=account_id)
     if (account_to_delete):
@@ -241,6 +241,7 @@ def delete_account(request, account_id, user_id):
         account_to_delete.is_active = False
         account_to_delete.save()    
     return redirect(f"/user/{ user_id }")
+
 
 def delete_user(request, user_id):
     user_to_delete = User.objects.filter(id=user_id)
@@ -250,6 +251,7 @@ def delete_user(request, user_id):
         user_to_delete.save()
     return redirect(f"/user/{ user_id }")
 
+
 def revive_user(request, user_id):
     user_to_revive = User.objects.filter(id=user_id)
     if (user_to_revive):
@@ -257,6 +259,7 @@ def revive_user(request, user_id):
         user_to_revive.is_active = True
         user_to_revive.save()
     return redirect(f"/user/{ user_id }")
+
 
 def update_account(request, account_id):
     if request.method == 'POST':
