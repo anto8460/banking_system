@@ -29,10 +29,10 @@
                     <div class="collapse navbar-collapse" id="navbarText">
                         <ul class="navbar-nav mr-auto">
                             <li class="nav-item">
-                                <a class="nav-link nav-link-selected" href="{% url 'banking_system_app:clients' %}">Clients</a>
+                                <a class="nav-link" href="/">Overview</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'banking_system_app:accounts' %}">Accounts</a>
+                                <a class="nav-link" href="{% url 'banking_system_app:clients' %}">Clients</a>
                             </li>
                             {% if user.is_superuser %}
                                 <li class="nav-item">
@@ -52,38 +52,8 @@
                 </span>
             </div>
         </div>
-        <div class="container">
-            <div class="main">
-                <table class="admin-section">
-                    <thead class="admin-section-title">
-                        <th colspan="4">Clients overview</th>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Number of accounts</th>
-                            <th>Edit</th>
-                        </tr>
-                    </thead>
-                    <tbody class="admin-section-content">
-                        {% for client in clients %}                        
-                            <tr>
-                                <td>
-                                    {{ client.details.first_name }} {{ client.details.last_name }}
-                                </td>
-                                <td>
-                                    {{ client.details.email }}
-                                </td>
-                                <td>                                    
-                                    {{ client.number_of_accounts}}
-                                </td>
-                                <td>
-                                    <a style="color: white; text-align: center;" href="#"><i class="fa-solid fa-pen-to-square"></i></a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>                
-            </div>
-        </div>
+        {% block content%}
+        {% comment %} Place your content here {% endcomment %}
+        {% endblock %}
     </body>
 </html>

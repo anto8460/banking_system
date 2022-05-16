@@ -1,0 +1,44 @@
+{% load date_utils %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% include 'partials/_header.html' with title='ANFA Bank | Admin Panel' %}
+    </head>
+    <body>
+        {% include 'partials/_admin_navbar.html' %}
+        <div class="container">
+            <form action="{% url 'banking_system_app:update_account' account_id=account.id %}"
+                  method="POST">
+                {% csrf_token %}
+                <h4>Details:</h4>
+                <div>
+                    <label>Account ID: {{ account.id }}</label>
+                </div>
+                <div>
+                    <label>Account owner: <a href="{% url 'banking_system_app:user_details' user_id=owner.id %}">{{ owner.first_name }} {{ owner.last_name }}</a></label>
+                </div>
+                <div>
+                    <label>Account type:</label>
+                    <select name="new_account_type">
+                        {% for type in account_types %}
+                            {% if account.account_type.type == type.type %}
+                                <option selected value="{{ type.type }}">{{ type.type.capitalize }}</option>
+                            {% else %}
+                                <option value="{{ type.type }}">{{ type.type.capitalize }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>                    
+                    <label>Account balance: {{ account.balance|intcomma }} DKK</label>
+                </div>
+                <div>
+                    {% load humanize %}
+                    <label>Account creation date: {% european_date account.created_at %}</label>
+                </div>                
+                <input type="submit" value="Save"/>
+            </form>
+        </div>        
+    </body>
+</html>

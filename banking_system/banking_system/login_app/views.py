@@ -14,7 +14,7 @@ def login(request):
             context = {
                 'error': 'Wrong username or password!'
             }
-    
+
     return render(request, 'login.html', context)
 
 

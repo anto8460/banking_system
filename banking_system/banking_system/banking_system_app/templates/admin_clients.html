@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% include 'partials/_header.html' with title='ANFA Bank | Admin Panel' %}
+    </head>
+    <body class="employees">
+        {% include 'partials/_admin_navbar.html' with selected='clients'%}
+        <div class="container">
+            <div class="main">
+                {% include 'partials/_clients_overview.html' with clients=active_clients %}
+                {% include 'partials/_clients_overview.html' with clients=unactive_clients %}                
+            </div>
+        </div>
+    </body>
+</html>
