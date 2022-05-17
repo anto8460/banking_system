@@ -1,11 +1,10 @@
 
 from twilio.rest import Client
-from .Singleton import SingletonMeta
 from decouple import config
 from random import randint
 
 
-class MFAClient(metaclass=SingletonMeta):
+class MFAClient():
 
     def __init__(self):
         self.account_sid = config('ACCOUNT_SID')
