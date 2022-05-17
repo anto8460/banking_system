@@ -1,5 +1,6 @@
 
 from decimal import Decimal
+from operator import is_
 from django.contrib.auth.models import User
 from django.db import models, transaction
 from django.db.models.query import QuerySet
@@ -92,6 +93,8 @@ class UserInformation(models.Model):
     date_of_birth = models.DateTimeField()
     cpr = models.CharField(unique=True, max_length=10)
     phone_number = models.CharField(unique=True, max_length=255)
+    is_active = models.BooleanField(default=True)
+    use_mfa = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True)
 
