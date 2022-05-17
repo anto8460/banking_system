@@ -1,10 +1,9 @@
 
 from twilio.rest import Client
 from decouple import config
-from random import randint
 
 
-class MFAClient():
+class MFAClient:
 
     def __init__(self):
         self.account_sid = config('ACCOUNT_SID')
@@ -12,15 +11,8 @@ class MFAClient():
         self.phone_number = config('PHONE_NUMBER')
         self.twilio_client = Client(self.account_sid, self.auth_token)
 
-    def send_message(self, message, reciever):
+    def send_message(self, message: str, reciever: str) -> None:
         message = self.twilio_client.messages.create(
             body=message,
             from_=self.phone_number,
             to=reciever)
-
-        print(message)
-
-    @staticmethod
-    def generate_code() -> str:
-        # Generate random code
-        return str(randint(100_000, 999_999))

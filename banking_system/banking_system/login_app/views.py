@@ -1,8 +1,9 @@
 from django.shortcuts import render, reverse
 from django.contrib.auth import authenticate, login as dj_login, logout as dj_logout
 from django.shortcuts import HttpResponseRedirect
-from .MFA.MFAClient import MFAClient
+from .MFA import MFA_Task
 from banking_system_app.models import UserInformation
+from .Utils.generate_code import generate_code
 
 
 def login(request):
@@ -14,14 +15,13 @@ def login(request):
             user_info = UserInformation.objects.get(user=user.id)
 
             if user_info.use_mfa:
-                code = MFAClient.generate_code()
+                code = generate_code()
                 request.session['code'] = code
                 request.session['user'] = request.POST['user']
                 request.session['password'] = request.POST['password']
-
                 phone_number = user_info.phone_number
 
-                MFAClient().send_message(f"Your code is: {code}", phone_number)
+                MFA_Task.send_code(code, phone_number)
 
                 return HttpResponseRedirect(reverse('login_app:verify_code'))
 
