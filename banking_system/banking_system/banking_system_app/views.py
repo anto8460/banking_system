@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
 
 @login_required(login_url='/login')
@@ -103,8 +103,8 @@ def transfer(request):
                     raise ValidationError(
                         "Recipient account number is the same as the sender")
 
-            except ValidationError as e:
-                context = {'error': e.message}
+            except (ValidationError, ObjectDoesNotExist) as e:
+                context = {'error': e}
                 return render(request, 'transfer_form.html', context)
 
             amount = request.POST['amount']
