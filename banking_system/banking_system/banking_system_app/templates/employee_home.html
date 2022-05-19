@@ -1,0 +1,65 @@
+{% extends "employee_nav_bar_template.html"%}
+    {% block content %}
+        <div class="container">
+            <div class="main">
+                <table class="admin-section">
+                    <thead class="admin-section-title">
+                        <th colspan="4">Clients overview</th>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Number of accounts</th>
+                            <th>Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody class="admin-section-content">
+                        {% for client in clients %}
+                            <tr>
+                                <td>
+                                    {{ client.details.first_name }} {{ client.details.last_name }}
+                                </td>
+                                <td>
+                                    {{ client.details.email }}
+                                </td>
+                                <td>                                    
+                                    {{ client.number_of_accounts}}
+                                </td>
+                                <td>
+                                    <a style="color: white; text-align: center;" href="#"><i class="fa-solid fa-pen-to-square"></i></a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <table class="admin-section">
+                    <thead class="admin-section-title">
+                        <th colspan="4">Accounts overview</th>
+                        <tr>
+                            <th>Number</th>
+                            <th>Type</th>
+                            <th>Owner's name</th>
+                            <th>Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody class="admin-section-content">
+                        {% for account in accounts %}
+                            <tr>
+                                <td>
+                                    {{ account.details.account_number }}
+                                </td>
+                                <td>
+                                    {{ account.details.account_type.type }}
+                                </td>
+                                <td>                                    
+                                    {{ account.user.first_name}} {{ account.user.last_name}}
+                                </td>
+                                <td>
+                                    <a style="color: white; text-align: center;" href="#"><i class="fa-solid fa-pen-to-square"></i></a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endblock %}

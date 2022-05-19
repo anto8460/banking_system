@@ -1,5 +1,5 @@
-from .models import Account, AccountType, Ledger
-from django.db.models import Q
+from models import Account, AccountType, Ledger
+from .AccountRanks import AccountRanks
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -29,42 +29,55 @@ def home(request):
 
 
 @login_required(login_url='/login')
-def clients(request):
-    return show_clients_overview(request)
-
-
-@login_required(login_url='/login')
-def client_details(request, user_id):
-    return show_user(request, user_id)
-
-
-@login_required(login_url='/login')
-def account_details(request, account_id):
-    return show_account(request, account_id)
-
-
-@login_required(login_url='/login')
-def accounts(request):
-    return show_accounts_overview(request)
-
-
-@login_required(login_url='/login')
-def employees(request):
-    return show_employees_overview(request)
-
-
-@login_required(login_url='/login')
 def account_info(request, account_id):
-
     context = {}
+
+    if request.user.is_staff:
+
+        account = Account.objects.filter(id=account_id)
+        if account:
+            account = account[0]
+            owner = User.objects.filter(id=account.user_id_id)
+            if owner:
+                owner = owner[0]
+                account_types = AccountType.objects.all()
+                context = {
+                    'account': account,
+                    'owner': owner,
+                    'account_types': account_types
+                }
+        return render(request, 'admin_account_details.html', context)
+
     account = Account.objects.get(id=account_id, is_active=True)
+
+    can_loan = False if account.account_type.type == AccountRanks.BASIC.value else True
 
     context = {
         'account': account,
+        'can_loan': can_loan,
     }
-    print(account.movements[0])
 
     return render(request, 'account_info.html', context)
+
+
+@login_required(login_url='/login')
+def loan(request, account_id):
+
+    context = {}
+    account = Account.objects.get(id=account_id)
+
+    if account.account_type.type == AccountRanks.BASIC.value:
+        context = {
+            'error': 'This account can NOT loan money from the bank'
+        }
+        return render(request, 'loan.html', context)
+
+    if request.method == 'POST':
+        amount = request.POST['amount']
+
+        account.make_loan(int(amount))
+
+    return render(request, 'loan.html', context)
 
 
 @login_required(login_url='/login')
