@@ -171,7 +171,8 @@ def show_user(request, user_id):
         }
         return render(request, 'admin_user_details.html', context)
     else:
-        return render(request, '404.html')    
+        return render(request, '404.html')
+
 
 def show_account(request, account_id):
     account = Account.objects.filter(id=account_id)
@@ -239,7 +240,7 @@ def delete_account(request, account_id, user_id):
     if (account_to_delete):
         account_to_delete = account_to_delete[0]
         account_to_delete.is_active = False
-        account_to_delete.save()    
+        account_to_delete.save()
     return redirect(f"/user/{ user_id }")
 
 
@@ -267,10 +268,10 @@ def update_account(request, account_id):
         if account_to_update:
             account_to_update = account_to_update[0]
             post_data = request.POST
-            
+
             # Getting the account type ID
             new_account_type_id = AccountType.objects.get(type=post_data['new_account_type'])
-            
+
             account_to_update.account_type_id = new_account_type_id.id
             account_to_update.save()
     return redirect('banking_system_app:accounts')

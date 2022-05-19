@@ -1,6 +1,5 @@
 
 from decimal import Decimal
-from operator import is_
 from django.contrib.auth.models import User
 from django.db import models, transaction
 from django.db.models.query import QuerySet
@@ -21,6 +20,20 @@ class UID(models.Model):
         return f'{self.pk}'
 
 
+class KnownBank(models.Model):
+    routing_nuber = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    address = models.CharField(max_length=15)
+    port = models.CharField(max_length=4)
+    name = models.CharField(max_length=255)
+    is_local = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'KnownBank - {self.address}:{self.port} - {self.name}'
+
+    class Meta:
+        db_table = 'known_banks'
+
+
 class AccountType(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     type = models.CharField(unique=True, max_length=255)
@@ -38,6 +51,7 @@ class Account(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     account_type = models.ForeignKey(AccountType, models.DO_NOTHING)
     user_id = models.ForeignKey(User, models.DO_NOTHING)
+    # routing_number = models.ForeignKey(KnownBank, models.DO_NOTHING)
     account_name = models.CharField(unique=False, max_length=255)
     is_active = models.BooleanField(unique=False)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -7,4 +7,4 @@ admin.site.register(AccountType)
 admin.site.register(BankDetail)
 admin.site.register(UserInformation)
 admin.site.register(Ledger)
-
+admin.site.register(KnownBank)
