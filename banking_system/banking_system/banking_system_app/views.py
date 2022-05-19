@@ -162,11 +162,7 @@ def show_accounts_overview(request):
 def show_employees_overview(request):
     # We make sure the user is an employee and administrator.
     if request.user.is_staff and request.user.is_superuser:
-        employees = db_utils.get_unactive_clients()
-        context = {
-            'user': request.user,
-            'employees': employees
-        }
+        context = get_employees_overview_response_context(request)
         return render(request, 'admin_employees.html', context)
 
     else:
@@ -219,7 +215,7 @@ def delete_user(request, user_id):
             user_to_delete = user_to_delete[0]
             user_to_delete.is_active = False
             user_to_delete.save()
-        return redirect(f"/account/{ user_id }")
+        return redirect(f"/user/{ user_id }")
     else:
         return unauth(request)
 
@@ -272,14 +268,18 @@ def create_user(request, user_type):
         new_user.email = post_data['email']
         new_user.username = post_data['email']
         new_user.is_staff = user_type == 'employee'
-        new_user.is_active = False
+        if user_type == 'client':
+            new_user.is_active = False
+        elif user_type == 'employee':
+            new_user.is_active = True
         new_user.set_password('12345678')
         new_user.save()
         if user_type == 'client':
             context = get_clients_overview_response_context(request)
             return render(request, 'admin_clients.html', context)
         elif user_type == 'employee':
-            return render(request, 'admin_employees.html')
+            context = get_employees_overview_response_context(request)
+            return render(request, 'admin_employees.html', context)
     else:
         return unauth(request)
 
@@ -315,6 +315,16 @@ def get_clients_overview_response_context(request):
     }
 
     return context
+
+
+def get_employees_overview_response_context(request):
+    active_employees = db_utils.get_active_employees()
+    unactive_employees = db_utils.get_unactive_employees()
+    return {
+        'user': request.user,
+        'active_employees': active_employees,
+        'unactive_employees': unactive_employees
+    }
 
 
 def get_accounts_overview_context(request):

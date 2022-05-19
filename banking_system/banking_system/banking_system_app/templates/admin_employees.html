@@ -7,39 +7,11 @@
         {% include 'partials/_admin_navbar.html' with selected='employees'%}
         <div class="container">
             <div class="main">
-                <table class="admin-section">
-                    <thead class="admin-section-title">
-                        <th colspan="4">Clients overview</th>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Edit</th>
-                        </tr>
-                    </thead>
-                    <tbody class="admin-section-content">
-                        {% for employee in employees %}                        
-                            <tr>
-                                <td>
-                                    {{ employee.first_name }} {{ employee.last_name }}
-                                </td>
-                                <td>
-                                    {{ employee.email }}
-                                </td>
-                                <td>
-                                    {% if employee.is_superuser %}
-                                    Administrator
-                                    {% else %}
-                                    Employee
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <a style="color: white; text-align: center;" href="{% url 'banking_system_app:user_details' user_id=employee.id %}"><i class="fa-solid fa-pen-to-square"></i></a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>                
+                <a href="{% url 'banking_system_app:show_create_user' user_type='employee' %}">Add new employee</a>
+                <h3>ACTIVE EMPLOYEES</h3>
+                {% include 'partials/_employees_overview.html' with employees=active_employees %}
+                <h3>UNACTIVE EMPLOYEES</h3>
+                {% include 'partials/_employees_overview.html' with employees=unactive_employees %}
             </div>
         </div>
     </body>
