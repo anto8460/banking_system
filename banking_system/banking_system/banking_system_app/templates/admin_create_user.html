@@ -6,7 +6,7 @@
     <body class="employees">
         {% include 'partials/_admin_navbar.html' %}
         <div class="container">
-            {% include 'partials/_user_details.html' with current_user=current_user action='update' %}
+            {% include 'partials/_user_details.html' with action='create' user_type=user_type %}
         </div>        
     </body>
 </html>

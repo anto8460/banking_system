@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% include 'partials/_header.html' with title='ANFA Bank | Admin Panel' %}
+    </head>
+    <body class="employees">
+        {% include 'partials/_admin_navbar.html' %}
+        <div class="container">
+            <form action="{% url 'banking_system_app:create_account' %}"
+                  method="POST">
+                {% csrf_token %}
+                <h4>Details:</h4>
+                <div>
+                    <label>Account owner:</label>
+                    <select name="account_owner">
+                        {% for owner in clients %}
+                            <option value="{{ owner.id }}">{{ owner.first_name }} {{ owner.last_name }} ({{ owner.email }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label>Account type:</label>
+                    <select name="account_type">
+                        {% for type in account_types %}
+                            <option value="{{ type.id }}">{{ type.type.capitalize }}</option>
+                        {% endfor %}
+                    </select>
+                </div>                
+                <input type="submit" value="Create account"/>
+            </form>
+        </div>        
+    </body>
+</html>

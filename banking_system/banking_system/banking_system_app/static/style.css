@@ -70,16 +70,24 @@
     margin-bottom: 2rem;
 }
 
-.admin-section-title tr:first-of-type {
+.admin-section-title tr:first-of-type, .admin-section-title-extended tr:first-of-type {
     background-color: #505050;
 }
 
-.admin-section-title tr:nth-of-type(2) {
+.admin-section-title tr:nth-of-type(2), .admin-section-title-extended tr:nth-of-type(2) {
     background-color: #252525;
 }
 
 .admin-section-title th {
     width: 33%;
+    color: white;
+    font-weight: bold;
+    padding: 1rem;
+    margin-bottom: 0;
+}
+
+.admin-section-title-extended th {
+    width: 25%;
     color: white;
     font-weight: bold;
     padding: 1rem;
@@ -96,15 +104,26 @@
     line-height: 4rem;
 }
 
+.admin-section-content-extended tr {
+    width: 100%;
+    height: 4rem;
+    line-height: 2rem;
+}
+
 .admin-section-content td {
     width: 33%;
     padding: 0 1rem 0 1rem;
 }
 
-.admin-section-content tr:first-child {
+.admin-section-content-extended td {
+    width: 25%;
+    padding: 0 1rem 0 1rem;
+}
+
+.admin-section-content tr:first-child, .admin-section-content-extended tr:first-child {
     background-color: #121212;
 }
 
-.admin-section-content tr:nth-child(even) {
+.admin-section-content tr:nth-child(even), .admin-section-content-extended tr:nth-child(even) {
     background-color: #252525;
 }

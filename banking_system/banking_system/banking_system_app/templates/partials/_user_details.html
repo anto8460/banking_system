@@ -1,0 +1,41 @@
+{% load date_utils %}
+{% if action == 'update' %}
+<form action="{% url 'banking_system_app:update_user' user_id=current_user.id %}" method="POST">
+{% elif action == 'create' %}
+<form action="{% url 'banking_system_app:create_user' user_type=user_type %}" method="POST">
+{% endif %}
+
+    {% csrf_token %}
+    <h4>Details:</h4>
+    <div>
+        <label>First name:</label>
+        <input name="first_name" type="text" value="{{ current_user.first_name }}">
+    </div>
+    <div>
+        <label>Last name:</label>
+        <input name="last_name" type="text" value="{{ current_user.last_name }}">
+    </div>
+    <div>
+        <label>Email:</label>
+        <input name="email" type="text" value="{{ current_user.email }}">
+    </div>
+    {% if user and action != 'create' and current_user.is_active and current_user.id != user.id %}
+        <a href="{% url 'banking_system_app:delete_user' user_id=current_user.id %}">Deactivate</i></a>
+    {% elif action != 'create' and not current_user.is_active and current_user.id != user.id %}
+        <a href="{% url 'banking_system_app:revive_user' user_id=current_user.id %}">Activate</i></a>
+    {% endif %}
+    {% if accounts and accounts|length > 0 %}
+        <h4>Accounts:</h4>
+        {% for account in accounts %}
+            <div>
+                <div>
+                    ID: <a href="{% url 'banking_system_app:account_details' account_id=account.id %}">{{ account.id }}</a>
+                </div>
+                <div>Type: {{ account.account_type.type.capitalize }}</div>
+                <a href="{% url 'banking_system_app:delete_account' account_id=account.id user_id=current_user.id %}"><i class="fa-solid fa-trash"></i></a>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <hr />
+    <input type="submit" value="{{ action.capitalize }}{% if type %} {{ type }}{% endif %}"/>
+</form>

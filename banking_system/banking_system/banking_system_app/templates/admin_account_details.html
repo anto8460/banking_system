@@ -5,7 +5,7 @@
     <head>
         {% include 'partials/_header.html' with title='ANFA Bank | Admin Panel' %}
     </head>
-    <body>
+    <body class="employees">
         {% include 'partials/_admin_navbar.html' %}
         <div class="container">
             <form action="{% url 'banking_system_app:update_account' account_id=account.id %}"
@@ -16,29 +16,41 @@
                     <label>Account ID: {{ account.id }}</label>
                 </div>
                 <div>
-                    <label>Account owner: <a href="{% url 'banking_system_app:user_details' user_id=owner.id %}">{{ owner.first_name }} {{ owner.last_name }}</a></label>
+                    <label>
+                        Account owner: <a href="{% url 'banking_system_app:user_details' user_id=owner.id %}">{{ owner.first_name }} {{ owner.last_name }}</a>
+                    </label>
                 </div>
                 <div>
                     <label>Account type:</label>
                     <select name="new_account_type">
                         {% for type in account_types %}
                             {% if account.account_type.type == type.type %}
-                                <option selected value="{{ type.type }}">{{ type.type.capitalize }}</option>
+                                <option selected value="{{ type.type }}">
+                                    {{ type.type.capitalize }}
+                                </option>
                             {% else %}
-                                <option value="{{ type.type }}">{{ type.type.capitalize }}</option>
+                                <option value="{{ type.type }}">
+                                    {{ type.type.capitalize }}
+                                </option>
                             {% endif %}
                         {% endfor %}
                     </select>
                 </div>
-                <div>                    
+                <div>
                     <label>Account balance: {{ account.balance|intcomma }} DKK</label>
                 </div>
                 <div>
                     {% load humanize %}
                     <label>Account creation date: {% european_date account.created_at %}</label>
-                </div>                
+                </div>
+                {% if account and account.is_active %}
+                    <a href="{% url 'banking_system_app:delete_account' account_id=account.id %}">Deactivate</i></a>
+                {% elif account and not account.is_active %}
+                    <a href="{% url 'banking_system_app:revive_account' account_id=account.id %}">Activate</i></a>
+                {% endif %}
+                <hr />
                 <input type="submit" value="Save"/>
             </form>
-        </div>        
+        </div>
     </body>
 </html>
