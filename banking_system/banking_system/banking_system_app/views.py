@@ -1,5 +1,5 @@
 
-from .models import Account, Ledger, AccountType
+from .models import Account, Ledger, AccountType, KnownBank
 from .AccountRanks import AccountRanks
 from django.shortcuts import render, redirect
 from django.db.models import Q
@@ -95,13 +95,25 @@ def transfer(request):
             'accounts': accounts,
         }
         if request.method == 'POST':
-            try:
-                sender = Account.objects.get(id=request.POST['sender'])
-                recipient = Account.objects.get(id=request.POST['recipient'])
 
-                if sender == recipient:
-                    raise ValidationError(
-                        "Recipient account number is the same as the sender")
+            routing_number = request.POST['recipient'][:3]
+            account_id = request.POST['recipient'][3:]
+
+            try:
+
+                known_bank = KnownBank.objects.filter(routing_number=routing_number)
+
+                if not known_bank:
+                    raise ObjectDoesNotExist('Unknown routing number')
+
+                if known_bank.is_local:
+
+                    sender = Account.objects.get(id=request.POST['sender'])
+                    recipient = Account.objects.get(id=account_id)
+
+                    if sender == recipient:
+                        raise ValidationError(
+                            "Recipient account number is the same as the sender")
 
             except (ValidationError, ObjectDoesNotExist) as e:
                 context = {'error': e}
