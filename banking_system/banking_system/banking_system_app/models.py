@@ -51,7 +51,7 @@ class Account(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     account_type = models.ForeignKey(AccountType, models.DO_NOTHING)
     user_id = models.ForeignKey(User, models.DO_NOTHING)
-    # routing_number = models.ForeignKey(KnownBank, models.DO_NOTHING)
+    routing_number = models.ForeignKey(KnownBank, models.DO_NOTHING)
     account_name = models.CharField(unique=False, max_length=255)
     is_active = models.BooleanField(unique=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -61,7 +61,11 @@ class Account(models.Model):
         db_table = 'accounts'
 
     def __str__(self):
-        return f'Account - {self.id}'
+        return f'Account - {self.routing_number.routing_number}:{self.id} -{self.account_name}'
+
+    @property
+    def account_number(self):
+        return f'{self.routing_number.routing_number} - {self.id}'
 
     @property
     def movements(self) -> QuerySet:

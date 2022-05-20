@@ -3,7 +3,7 @@ from twilio.rest import Client
 from decouple import config
 
 
-class MFAClient:
+class SMS_Client:
 
     def __init__(self):
         self.account_sid = config('ACCOUNT_SID')

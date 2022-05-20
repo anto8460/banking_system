@@ -1,6 +1,6 @@
 
 import django_rq
-from SMS_Client.SMS_Client import MFAClient
+from SMS_Client.SMS_Client import SMS_Client
 
 
 def send_code(code, phone_number):
@@ -8,4 +8,4 @@ def send_code(code, phone_number):
 
 
 def _send_code(params):
-    MFAClient().send_message(params['code'], params['phone_number'])
+    SMS_Client().send_message(params['code'], params['phone_number'])
