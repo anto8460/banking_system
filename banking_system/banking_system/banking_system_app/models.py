@@ -7,6 +7,7 @@ from django.utils import timezone
 import uuid
 from .errors import InsufficientFunds, UnAuthorized
 from .AccountRanks import AccountRanks
+from banking_system_app.Utils.generators import generate_account_number, generate_routing_number
 
 
 class UID(models.Model):
@@ -21,7 +22,7 @@ class UID(models.Model):
 
 
 class KnownBank(models.Model):
-    routing_nuber = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    routing_number = models.CharField(primary_key=True, max_length=3, editable=False, default=generate_routing_number)
     address = models.CharField(max_length=15)
     port = models.CharField(max_length=4)
     name = models.CharField(max_length=255)
@@ -48,12 +49,14 @@ class AccountType(models.Model):
 
 
 class Account(models.Model):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    id = models.CharField(max_length=9, primary_key=True, editable=False, default=generate_account_number)
     account_type = models.ForeignKey(AccountType, models.DO_NOTHING)
     user_id = models.ForeignKey(User, models.DO_NOTHING)
     routing_number = models.ForeignKey(KnownBank, models.DO_NOTHING)
     account_name = models.CharField(unique=False, max_length=255)
     is_active = models.BooleanField(unique=False)
+    use_mfa = models.BooleanField(unique=False, default=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True)
 
@@ -90,19 +93,6 @@ class Account(models.Model):
         debit_account.save()
 
         Ledger.transfer(amount, debit_account, 'loan', self, 'loan', is_loan=True)
-
-
-class BankDetail(models.Model):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-    account = models.ForeignKey(Account, models.DO_NOTHING)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'bank_details'
-
-    def __str__(self):
-        return f'BankDetails - {self.id}'
 
 
 class UserInformation(models.Model):

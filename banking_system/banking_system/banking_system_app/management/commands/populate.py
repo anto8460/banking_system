@@ -3,7 +3,7 @@ from random import randint
 import secrets
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import User
-from banking_system_app.models import Account, Ledger, AccountType, UserInformation
+from banking_system_app.models import Account, Ledger, AccountType, UserInformation, KnownBank
 from banking_system_app.AccountRanks import AccountRanks
 from django.utils import timezone
 from django.conf import settings
@@ -22,14 +22,18 @@ class Command(BaseCommand):
             bank_user.save()
             rank = AccountType.objects.get(type=AccountRanks.BASIC)
 
+            local_bank = KnownBank.objects.create(address='127.0.0.1', port='8000', name='ANFA', is_local=True)
+
             central_account_ipo = Account.objects.create(
                 account_type=rank,
                 user_id=bank_user,
+                routing_number=local_bank,
                 account_name="BANK IPO Account",
                 is_active=True)
 
             central_account_ops = Account.objects.create(
                 account_type=rank,
+                routing_number=local_bank,
                 user_id=bank_user,
                 account_name="BANK OPS Account",
                 is_active=True)
@@ -39,7 +43,7 @@ class Command(BaseCommand):
             Ledger.transfer(
                 10_000_000, central_account_ipo, "Initial amount", central_account_ops, "Initial amount", is_loan=True)
 
-            self.create_users(central_account_ops)
+            self.create_users(central_account_ops, local_bank)
 
         except CommandError as e:
             print(e)
@@ -52,7 +56,7 @@ class Command(BaseCommand):
                 obj = AccountType.objects.create(type=type.value)
                 obj.save()
 
-    def create_users(self, ops_account, account_rank: AccountRanks = AccountRanks.BASIC):
+    def create_users(self, ops_account, bank, account_rank: AccountRanks = AccountRanks.BASIC):
         names = ['Rafael', 'Anton', 'Mary', 'Sergei', 'Carina', 'Marcos', 'Jonathan', 'Pedro']
         last_names = ['Barbieru', 'Kamenov', 'Johnson', 'Vladistok', 'Carjila', 'Cuadrado', 'Space', 'Sánchez']
         for index, name in enumerate(names):
@@ -91,6 +95,7 @@ class Command(BaseCommand):
             account = Account.objects.create(
                 account_type=rank,
                 user_id=user,
+                routing_number=bank,
                 account_name=username,
                 is_active=True)
             account.save()
