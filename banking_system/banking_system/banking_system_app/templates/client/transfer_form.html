@@ -20,7 +20,7 @@
                 <select name="sender" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
                     <option selected>Choose your account</option>
                     {% for account in accounts %}
-                        <option value={{account.id}}>{{account.account_name}}</option>
+                        <option value={{account.id}}>{{account.id}}</option>
                     {% endfor %}
                 </select>
                 <input type="text" class="form-control" name="recipient" placeholder="Recipient's account number" />
