@@ -22,7 +22,7 @@ def home(request):
             accounts = Account.objects.filter(user_id=user, is_active=True).all()
             context = {'user': user, 'accounts': accounts}
             # We render the customer's homepage.
-            return render(request, 'customer_home.html', context)
+            return render(request, 'client/customer_home.html', context)
         # If the user is an employee
         else:
             return show_clients_overview(request)
@@ -46,7 +46,7 @@ def account_info(request, account_id):
                     'owner': owner,
                     'account_types': account_types
                 }
-        return render(request, 'admin_account_details.html', context)
+        return render(request, 'admin/admin_account_details.html', context)
 
     account = Account.objects.get(id=account_id, is_active=True)
 
@@ -57,7 +57,7 @@ def account_info(request, account_id):
         'can_loan': can_loan,
     }
 
-    return render(request, 'account_info.html', context)
+    return render(request, 'client/account_info.html', context)
 
 
 @login_required(login_url='/login')
@@ -70,14 +70,14 @@ def loan(request, account_id):
         context = {
             'error': 'This account can NOT loan money from the bank'
         }
-        return render(request, 'loan.html', context)
+        return render(request, 'client/loan.html', context)
 
     if request.method == 'POST':
         amount = request.POST['amount']
 
         account.make_loan(int(amount))
 
-    return render(request, 'loan.html', context)
+    return render(request, 'client/loan.html', context)
 
 
 @login_required(login_url='/login')
@@ -105,7 +105,7 @@ def transfer(request):
 
             except ValidationError as e:
                 context = {'error': e.message}
-                return render(request, 'transfer_form.html', context)
+                return render(request, 'client/transfer_form.html', context)
 
             amount = request.POST['amount']
             text = request.POST['text']
@@ -115,16 +115,16 @@ def transfer(request):
 
             context['success'] = 'true'
 
-            return render(request, 'transfer_form.html', context)
+            return render(request, 'client/transfer_form.html', context)
         else:
-            return render(request, 'transfer_form.html', context)
+            return render(request, 'client/transfer_form.html', context)
 
 
 def show_clients_overview(request):
     # We make sure the user is an employee.
     if request.user.is_staff:
         context = get_clients_overview_response_context(request)
-        return render(request, 'admin_clients.html', context)
+        return render(request, 'admin/admin_clients.html', context)
 
     else:
         # If the user is not an employee, we render an authorization error
@@ -140,7 +140,7 @@ def show_user(request, user_id):
             'current_user': current_user,
             'accounts': user_accounts
         }
-        return render(request, 'admin_user_details.html', context)
+        return render(request, 'admin/admin_user_details.html', context)
     else:
         return unauth(request)
 
@@ -158,14 +158,14 @@ def show_account(request, account_id):
                 'owner': owner,
                 'account_types': account_types
             }
-    return render(request, 'admin_account_details.html', context)
+    return render(request, 'admin/admin_account_details.html', context)
 
 
 def show_accounts_overview(request):
     # We make sure the user is an employee.
     if request.user.is_staff:
         context = get_accounts_overview_context(request)
-        return render(request, 'admin_accounts.html', context)
+        return render(request, 'admin/admin_accounts.html', context)
 
     else:
         # If the user is not an employee, we render an authorization error
@@ -176,7 +176,7 @@ def show_employees_overview(request):
     # We make sure the user is an employee and administrator.
     if request.user.is_staff and request.user.is_superuser:
         context = get_employees_overview_response_context(request)
-        return render(request, 'admin_employees.html', context)
+        return render(request, 'admin/admin_employees.html', context)
 
     else:
         # If the user is not an employee, we render an authorization error
@@ -267,7 +267,7 @@ def show_create_user(request, user_type):
         context = {
             'user_type': user_type
         }
-        return render(request, 'admin_create_user.html', context)
+        return render(request, 'admin/admin_create_user.html', context)
     else:
         return unauth(request)
 
@@ -289,10 +289,10 @@ def create_user(request, user_type):
         new_user.save()
         if user_type == 'client':
             context = get_clients_overview_response_context(request)
-            return render(request, 'admin_clients.html', context)
+            return render(request, 'admin/admin_clients.html', context)
         elif user_type == 'employee':
             context = get_employees_overview_response_context(request)
-            return render(request, 'admin_employees.html', context)
+            return render(request, 'admin/admin_employees.html', context)
     else:
         return unauth(request)
 
@@ -376,7 +376,7 @@ def show_create_account(request):
             'account_types': account_types,
             'clients': clients
         }
-        return render(request, 'admin_create_account.html', context)
+        return render(request, 'admin/admin_create_account.html', context)
     else:
         return unauth(request)
 
@@ -395,7 +395,7 @@ def create_account(request):
         )
         new_account.save()
         context = get_accounts_overview_context(request)
-        return render(request, 'admin_accounts.html', context)
+        return render(request, 'admin/admin_accounts.html', context)
     else:
         return unauth(request)
 
