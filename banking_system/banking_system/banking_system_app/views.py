@@ -1,4 +1,4 @@
-from models import Account, AccountType, Ledger
+from .models import Account, AccountType, Ledger
 from .AccountRanks import AccountRanks
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
