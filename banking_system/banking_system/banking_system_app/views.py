@@ -1,10 +1,11 @@
-from .models import Account, AccountType, Ledger
+from django.dispatch import receiver
+from .models import Account, AccountType, Ledger, UserInformation
 from .AccountRanks import AccountRanks
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from banking_system_app import db_utils
+from banking_system_app import db_utils, sms_task
 from django.utils import timezone
 
 
@@ -112,6 +113,14 @@ def transfer(request):
 
             # Make transaction
             Ledger.transfer(float(amount), sender, text, recipient, text)
+
+            # Sending SMS confirmation to both parties
+            sender_owner = UserInformation.objects.get(user=sender.user_id_id)
+            recipient_owner = UserInformation.objects.get(user=recipient.user_id_id)
+            sender_message = f"Hi! You just sent { amount } DKK to { recipient.id }"
+            recipient_message = f"Hi! You have been transferred { amount } DKK to { recipient.id }"
+            sms_task.send_message(sender_message, sender_owner.phone_number)
+            sms_task.send_message(recipient_message, recipient_owner.phone_number)
 
             context['success'] = 'true'
 
