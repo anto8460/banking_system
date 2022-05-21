@@ -29,7 +29,7 @@ def home(request):
 
 
 @login_required(login_url='/login')
-def account_info(request, account_id):
+def account_details(request, account_id):
     context = {}
 
     if request.user.is_staff:
@@ -57,7 +57,7 @@ def account_info(request, account_id):
         'can_loan': can_loan,
     }
 
-    return render(request, 'client/account_info.html', context)
+    return render(request, 'client/account_details.html', context)
 
 
 @login_required(login_url='/login')
@@ -120,6 +120,7 @@ def transfer(request):
             return render(request, 'client/transfer_form.html', context)
 
 
+@login_required(login_url='/login')
 def show_clients_overview(request):
     # We make sure the user is an employee.
     if request.user.is_staff:
@@ -131,6 +132,7 @@ def show_clients_overview(request):
         return render(request, 'auth_error.html')
 
 
+@login_required(login_url='/login')
 def show_user(request, user_id):
     current_user = User.objects.filter(id=user_id)
     if (len(current_user) > 0):
@@ -145,6 +147,7 @@ def show_user(request, user_id):
         return unauth(request)
 
 
+@login_required(login_url='/login')
 def show_account(request, account_id):
     account = Account.objects.filter(id=account_id)
     if account:
@@ -161,6 +164,7 @@ def show_account(request, account_id):
     return render(request, 'admin/admin_account_details.html', context)
 
 
+@login_required(login_url='/login')
 def show_accounts_overview(request):
     # We make sure the user is an employee.
     if request.user.is_staff:
@@ -172,6 +176,7 @@ def show_accounts_overview(request):
         return render(request, 'auth_error.html')
 
 
+@login_required(login_url='/login')
 def show_employees_overview(request):
     # We make sure the user is an employee and administrator.
     if request.user.is_staff and request.user.is_superuser:
@@ -183,6 +188,7 @@ def show_employees_overview(request):
         return render(request, 'auth_error.html')
 
 
+@login_required(login_url='/login')
 def update_user(request, user_id):
     if request.method == 'POST':
         user_to_update = User.objects.filter(id=user_id)
@@ -197,6 +203,7 @@ def update_user(request, user_id):
     return redirect('banking_system_app:clients')
 
 
+@login_required(login_url='/login')
 def delete_account(request, account_id):
     if (request.user.is_staff):
         account_to_delete = Account.objects.filter(id=account_id)
@@ -209,6 +216,7 @@ def delete_account(request, account_id):
         return unauth(request)
 
 
+@login_required(login_url='/login')
 def revive_account(request, account_id):
     if (request.user.is_staff):
         account_to_revive = Account.objects.filter(id=account_id)
@@ -221,6 +229,7 @@ def revive_account(request, account_id):
         return unauth(request)
 
 
+@login_required(login_url='/login')
 def delete_user(request, user_id):
     if (request.user.is_staff):
         user_to_delete = User.objects.filter(id=user_id)
@@ -233,6 +242,7 @@ def delete_user(request, user_id):
         return unauth(request)
 
 
+@login_required(login_url='/login')
 def revive_user(request, user_id):
     if (request.user.is_staff):
         user_to_revive = User.objects.filter(id=user_id)
@@ -245,6 +255,7 @@ def revive_user(request, user_id):
         return unauth(request)
 
 
+@login_required(login_url='/login')
 def update_account(request, account_id):
     if request.method == 'POST' and request.user.is_staff:
         account_to_update = Account.objects.filter(id=account_id)
@@ -262,6 +273,7 @@ def update_account(request, account_id):
         return unauth()
 
 
+@login_required(login_url='/login')
 def show_create_user(request, user_type):
     if request.user.is_staff:
         context = {
@@ -272,6 +284,7 @@ def show_create_user(request, user_type):
         return unauth(request)
 
 
+@login_required(login_url='/login')
 def create_user(request, user_type):
     if request.user.is_staff:
         post_data = request.POST
@@ -297,6 +310,7 @@ def create_user(request, user_type):
         return unauth(request)
 
 
+@login_required(login_url='/login')
 def get_clients_overview_response_context(request):
     active_clients_array = []
     unactive_clients_array = []
@@ -330,6 +344,7 @@ def get_clients_overview_response_context(request):
     return context
 
 
+@login_required(login_url='/login')
 def get_employees_overview_response_context(request):
     active_employees = db_utils.get_active_employees()
     unactive_employees = db_utils.get_unactive_employees()
@@ -340,6 +355,7 @@ def get_employees_overview_response_context(request):
     }
 
 
+@login_required(login_url='/login')
 def get_accounts_overview_context(request):
     active_accounts = db_utils.get_active_accounts()
     unactive_accounts = db_utils.get_unactive_accounts()
@@ -368,6 +384,7 @@ def get_accounts_overview_context(request):
     }
 
 
+@login_required(login_url='/login')
 def show_create_account(request):
     if (request.user.is_staff):
         account_types = db_utils.get_account_types()
@@ -381,6 +398,7 @@ def show_create_account(request):
         return unauth(request)
 
 
+@login_required(login_url='/login')
 def create_account(request):
     if (request.user.is_staff):
         post_data = request.POST
@@ -400,5 +418,6 @@ def create_account(request):
         return unauth(request)
 
 
+@login_required(login_url='/login')
 def unauth(request):
     return render(request, '404.html')

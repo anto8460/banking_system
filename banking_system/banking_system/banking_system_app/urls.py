@@ -24,7 +24,7 @@ urlpatterns = [
     # Accounts
     path('accounts', views.show_accounts_overview, name='accounts'),
     path('show_create_account', views.show_create_account, name='show_create_account'),
-    path('account/<account_id>', views.account_info, name='account_details'),
+    path('account/<account_id>', views.account_details, name='account_details'),
 
     # Loan
     path('loan/<account_id>', views.loan, name='loan'),
