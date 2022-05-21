@@ -23,6 +23,7 @@ class UID(models.Model):
 
 class KnownBank(models.Model):
     routing_number = models.CharField(primary_key=True, max_length=3, editable=False, default=generate_routing_number)
+    user_id = models.ForeignKey(User, models.DO_NOTHING)
     address = models.CharField(max_length=15)
     port = models.CharField(max_length=4)
     name = models.CharField(max_length=255)
@@ -124,7 +125,7 @@ class Ledger(models.Model):
         db_table = 'ledger'
 
     @classmethod
-    def transfer(cls, amount, debit_account, debit_text, credit_account, credit_text, is_loan=False) -> int:
+    def intra_transfer(cls, amount, debit_account, debit_text, credit_account, credit_text, is_loan=False) -> int:
         assert amount >= 0, 'Negative amount not allowed for transfer.'
         with transaction.atomic():
             if debit_account.balance >= amount or is_loan:
@@ -134,6 +135,21 @@ class Ledger(models.Model):
             else:
                 raise InsufficientFunds
         return uid
+
+    @classmethod
+    def inter_transfer(cls, amount, account, text) -> int:
+        with transaction.atomic():
+            if account.balance >= amount and amount > 0:
+                uid = UID.uid
+                cls(amount=amount, transaction=uid, account=account, text=text).save()
+            else:
+                raise InsufficientFunds
+        return uid
+
+    @classmethod
+    def create_transaction(cls, amount, account, text):
+        uid = UID.uid
+        return cls(amount=amount, transaction=uid, account=account, text=text)
 
     def __str__(self):
         return f'{self.amount} :: {self.transaction} :: {self.created_at} :: {self.account} :: {self.text}'
