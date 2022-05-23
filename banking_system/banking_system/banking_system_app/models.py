@@ -1,13 +1,16 @@
 
+import django_rq
+import uuid
+import requests
 from decimal import Decimal
-from operator import is_
 from django.contrib.auth.models import User
 from django.db import models, transaction
 from django.db.models.query import QuerySet
 from django.utils import timezone
-import uuid
 from .errors import InsufficientFunds, UnAuthorized
 from .AccountRanks import AccountRanks
+from banking_system_app.Utils.generators import generate_account_number, generate_routing_number
+from rest_framework.authtoken.models import Token
 
 
 class UID(models.Model):
@@ -19,6 +22,21 @@ class UID(models.Model):
 
     def __str__(self):
         return f'{self.pk}'
+
+
+class KnownBank(models.Model):
+    routing_number = models.CharField(primary_key=True, max_length=3, editable=False, default=generate_routing_number)
+    user = models.ForeignKey(User, models.DO_NOTHING)
+    address = models.CharField(max_length=15)
+    port = models.CharField(max_length=4)
+    name = models.CharField(max_length=255)
+    is_local = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'KnownBank - {self.address}:{self.port} - {self.name}'
+
+    class Meta:
+        db_table = 'known_banks'
 
 
 class AccountType(models.Model):
@@ -35,11 +53,14 @@ class AccountType(models.Model):
 
 
 class Account(models.Model):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    id = models.CharField(max_length=9, primary_key=True, editable=False, default=generate_account_number)
     account_type = models.ForeignKey(AccountType, models.DO_NOTHING)
     user_id = models.ForeignKey(User, models.DO_NOTHING)
+    routing_number = models.ForeignKey(KnownBank, models.DO_NOTHING)
     account_name = models.CharField(unique=False, max_length=255)
     is_active = models.BooleanField(unique=False)
+    use_mfa = models.BooleanField(unique=False, default=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True)
 
@@ -47,7 +68,11 @@ class Account(models.Model):
         db_table = 'accounts'
 
     def __str__(self):
-        return f'Account - {self.id}'
+        return f'Account - {self.routing_number.routing_number}:{self.id} -{self.account_name}'
+
+    @property
+    def account_number(self):
+        return f'{self.routing_number.routing_number} - {self.id}'
 
     @property
     def movements(self) -> QuerySet:
@@ -72,19 +97,6 @@ class Account(models.Model):
         debit_account.save()
 
         Ledger.transfer(amount, debit_account, 'loan', self, 'loan', is_loan=True)
-
-
-class BankDetail(models.Model):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-    account = models.ForeignKey(Account, models.DO_NOTHING)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'bank_details'
-
-    def __str__(self):
-        return f'BankDetails - {self.id}'
 
 
 class UserInformation(models.Model):
@@ -116,7 +128,7 @@ class Ledger(models.Model):
         db_table = 'ledger'
 
     @classmethod
-    def transfer(cls, amount, debit_account, debit_text, credit_account, credit_text, is_loan=False) -> int:
+    def intra_transfer(cls, amount, debit_account, debit_text, credit_account, credit_text, is_loan=False) -> int:
         assert amount >= 0, 'Negative amount not allowed for transfer.'
         with transaction.atomic():
             if debit_account.balance >= amount or is_loan:
@@ -126,6 +138,46 @@ class Ledger(models.Model):
             else:
                 raise InsufficientFunds
         return uid
+
+    @classmethod
+    def inter_transfer(
+          cls,
+          amount: float,
+          sender: Account,
+          sender_text: str,
+          reciever: str,
+          known_bank: KnownBank) -> bool:
+        
+        ip = known_bank.address
+        port = known_bank.port
+
+        token = Token.objects.get(user_id=known_bank.user)
+
+        headers = {
+            'Authorization': f'Token {token.key}'
+        }
+
+        has_address = requests.get(f'http://{ip}:{port}/api/v1/account/{reciever}', headers=headers)
+
+        if has_address.status_code == 200:
+            transaction_text = f"Transaction from: {sender.account_number}\n" + sender_text
+
+            body = {
+                'amount': amount,
+                'account_id': reciever,
+                'text': transaction_text
+            }
+
+            response = requests.post(f'http://{ip}:{port}/api/v1/inter-transaction', data=body, headers=headers)
+
+            if response.status_code == 200:
+                transaction_text = f"Transaction to: {known_bank.routing_number} - {reciever}\n" + sender_text
+                uid = UID.uid
+                cls(amount=-float(amount), transaction=uid, account=sender, text=transaction_text).save()
+
+                return True
+
+        return False
 
     def __str__(self):
         return f'{self.amount} :: {self.transaction} :: {self.created_at} :: {self.account} :: {self.text}'

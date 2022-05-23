@@ -4,7 +4,6 @@ from .models import *
 
 admin.site.register(Account)
 admin.site.register(AccountType)
-admin.site.register(BankDetail)
 admin.site.register(UserInformation)
 admin.site.register(Ledger)
-
+admin.site.register(KnownBank)

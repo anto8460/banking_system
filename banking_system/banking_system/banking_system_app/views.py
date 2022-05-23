@@ -1,10 +1,10 @@
-from django.dispatch import receiver
-from .models import Account, AccountType, Ledger, UserInformation
+
+from .models import Account, AccountType, Ledger, UserInformation, KnownBank
 from .AccountRanks import AccountRanks
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from banking_system_app import db_utils, sms_task
 from django.utils import timezone
 
@@ -96,31 +96,56 @@ def transfer(request):
             'accounts': accounts,
         }
         if request.method == 'POST':
+
+            routing_number = request.POST['recipient'][:3]
+            account_id = request.POST['recipient'][3:]
+
             try:
-                sender = Account.objects.get(id=request.POST['sender'])
-                recipient = Account.objects.get(id=request.POST['recipient'])
+                known_bank = KnownBank.objects.filter(routing_number=routing_number)
 
-                if sender == recipient:
-                    raise ValidationError(
-                        "Recipient account number is the same as the sender")
+                if not known_bank:
+                    raise ObjectDoesNotExist('Unknown routing number')
 
-            except ValidationError as e:
-                context = {'error': e.message}
+                if known_bank[0].is_local:
+
+                    sender = Account.objects.get(id=request.POST['sender'])
+                    recipient = Account.objects.get(id=account_id)
+
+                    amount = request.POST['amount']
+                    text = request.POST['text']
+
+                    if sender == recipient:
+                        raise ValidationError(
+                            "Recipient account number is the same as the sender")
+
+                    # Make transaction
+                    Ledger.intra_transfer(float(amount), sender, text, recipient, text)
+
+                    context['status'] = 'true'
+
+                    # Sending SMS confirmation to both parties
+                    sender_owner = UserInformation.objects.get(user=sender.user_id_id)
+                    recipient_owner = UserInformation.objects.get(user=recipient.user_id_id)
+                    sender_message = f"Hi! You just sent { amount } DKK to { recipient.id }"
+                    recipient_message = f"Hi! You have been transferred { amount } DKK to { recipient.id }"
+                    sms_task.send_message(sender_message, sender_owner.phone_number)
+                    sms_task.send_message(recipient_message, recipient_owner.phone_number)
+
+                else:
+                    sender = Account.objects.get(id=request.POST['sender'])
+                    recipient = account_id
+                    amount = request.POST['amount']
+                    text = request.POST['text']
+
+                    success = Ledger.inter_transfer(amount, sender, text, recipient, known_bank[0])
+
+                    context['status'] = 1 if success else 0
+
+
+
+            except (ValidationError, ObjectDoesNotExist) as e:
+                context = {'error': e}
                 return render(request, 'client/transfer_form.html', context)
-
-            amount = request.POST['amount']
-            text = request.POST['text']
-
-            # Make transaction
-            Ledger.transfer(float(amount), sender, text, recipient, text)
-
-            # Sending SMS confirmation to both parties
-            sender_owner = UserInformation.objects.get(user=sender.user_id_id)
-            recipient_owner = UserInformation.objects.get(user=recipient.user_id_id)
-            sender_message = f"Hi! You just sent { amount } DKK to { recipient.id }"
-            recipient_message = f"Hi! You have been transferred { amount } DKK to { recipient.id }"
-            sms_task.send_message(sender_message, sender_owner.phone_number)
-            sms_task.send_message(recipient_message, recipient_owner.phone_number)
 
             context['success'] = 'true'
 

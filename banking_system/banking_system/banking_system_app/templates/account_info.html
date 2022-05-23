@@ -1,0 +1,32 @@
+{% extends "customer_nav_bar_template.html"%}
+    {% block content %}
+        <h1>Account: {{account.account_name}}</h1>
+        <h2>Account number: {{account.account_number}}</h2>
+            <table class="table table-striped">
+                <h3>Transaction History</h3>
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Text</th>
+                            <th scope="col">Account</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in account.movements %}
+                        <tr>
+                            <th scope="row"></th>
+                            <td>{{ transaction.amount }}</td>
+                            <td>{{ transaction.created_at }}</td>
+                            <td>{{ transaction.text }}</td>
+                            <td>{{ transaction.account}}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+            </table>
+        <a  class="btn btn-info" href="/transfer" style="float: right;">Transfer</a>
+        {% if can_loan %}
+            <a  class="btn btn-info" href="/loan/{{account.id}}" style="float: right; margin-right: 10px">Loan</a>
+        {% endif %}
+    {% endblock %}

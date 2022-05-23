@@ -4,16 +4,15 @@
         <br>
         <br>
         <div class="container-fluid" style="width:50%" align="left">
-            {% if success %}
+            {% if status == 1%}
                 <div class="alert alert-success" role="alert">
                     Transaction Succeeded
                 </div>
+            {% elif status == 0 %}
+                <div class="alert alert-danger" role="alert">
+                    Transaction was unsuccessful
+                </div>
             {% endif %}
-            {% if error %}
-            <div class="alert alert-danger" role="alert">
-                {{ error    }}
-            </div>
-        {% endif %}
             <form action="" method="POST">
                 {% csrf_token %}
                 <h1>Transfer</h1>

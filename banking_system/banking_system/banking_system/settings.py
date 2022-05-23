@@ -27,9 +27,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+
+    # 3rd party
     'django_rq',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
 
     'banking_system_app',
+    'banking_system_api',
     'login_app'
 ]
 
@@ -63,6 +69,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'banking_system.wsgi.application'
 
+REST_FRAMEWORK = {
+   'DEFAULT_PERMISSION_CLASSES': [
+      'banking_system_api.permissions.IsBankOrNoAccess',
+      'rest_framework.permissions.IsAuthenticated',
+   ],
+   'DEFAULT_AUTHENTICATION_CLASSES': [
+      'rest_framework.authentication.TokenAuthentication',
+   ]
+}
 
 RQ_QUEUES = {
     'default': {
