@@ -129,7 +129,7 @@ def transfer(request):
                     amount = request.POST['amount']
                     text = request.POST['text']
 
-                    inter_transfer(amount, sender, text, recipient, text, known_bank[0])
+                    Ledger.inter_transfer(amount, sender, text, recipient, known_bank[0])
 
             except (ValidationError, ObjectDoesNotExist) as e:
                 context = {'error': e}

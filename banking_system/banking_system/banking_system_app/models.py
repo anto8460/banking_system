@@ -1,13 +1,16 @@
 
+import django_rq
+import uuid
+import requests
 from decimal import Decimal
 from django.contrib.auth.models import User
 from django.db import models, transaction
 from django.db.models.query import QuerySet
 from django.utils import timezone
-import uuid
 from .errors import InsufficientFunds, UnAuthorized
 from .AccountRanks import AccountRanks
 from banking_system_app.Utils.generators import generate_account_number, generate_routing_number
+from rest_framework.authtoken.models import Token
 
 
 class UID(models.Model):
@@ -137,19 +140,40 @@ class Ledger(models.Model):
         return uid
 
     @classmethod
-    def inter_transfer(cls, amount, sender, reciever, text, known_bank) -> int:
-        with transaction.atomic():
-            if sender.balance >= amount and amount > 0:
-                uid = UID.uid
-                cls(amount=amount, transaction=uid, account=sender, text=text).save()
-            else:
-                raise InsufficientFunds
-        return uid
+    def inter_transfer(
+          cls,
+          amount: float,
+          sender: Account,
+          sender_text: str,
+          reciever: str,
+          known_bank: KnownBank):
+        
+        ip = known_bank.address
+        port = known_bank.port
 
-    @classmethod
-    def create_transaction(cls, amount, account, text):
-        uid = UID.uid
-        return cls(amount=amount, transaction=uid, account=account, text=text)
+        token = Token.objects.get(user_id=known_bank.user)
+
+        headers = {
+            'Authorization': f'Token {token.key}'
+        }
+
+        has_address = requests.get(f'http://{ip}:{port}/api/v1/account/{reciever}', headers=headers)
+
+        if has_address.status_code == 200:
+            transaction_text = f"Transaction from: {sender.account_number}\n" + sender_text
+
+            body = {
+                'amount': amount,
+                'account_id': reciever,
+                'text': transaction_text
+            }
+
+            response = requests.post(f'http://{ip}:{port}/api/v1/inter-transaction', data=body, headers=headers)
+
+            if response.status_code == 200:
+                transaction_text = f"Transaction to: {known_bank.routing_number} - {reciever}\n" + sender_text
+                uid = UID.uid
+                cls(amount=-float(amount), transaction=uid, account=sender, text=transaction_text).save()
 
     def __str__(self):
         return f'{self.amount} :: {self.transaction} :: {self.created_at} :: {self.account} :: {self.text}'
