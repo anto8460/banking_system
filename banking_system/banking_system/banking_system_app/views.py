@@ -172,9 +172,13 @@ def show_user(request, user_id):
     if (len(current_user) > 0):
         current_user = current_user[0]
         user_accounts = Account.objects.filter(user_id_id=user_id, is_active=True)
+        user_info = UserInformation.objects.get(user_id=current_user)
+
         context = {
             'current_user': current_user,
-            'accounts': user_accounts
+            'accounts': user_accounts,
+            'user_info': user_info,
+            'date': user_info.date_of_birth.strftime('%Y-%m-%d'),
         }
         return render(request, 'admin/admin_user_details.html', context)
     else:
@@ -226,6 +230,7 @@ def show_employees_overview(request):
 def update_user(request, user_id):
     if request.method == 'POST':
         user_to_update = User.objects.filter(id=user_id)
+        info_to_update = UserInformation.objects.get(user=user_to_update[0])
         if user_to_update:
             user_to_update = user_to_update[0]
             post_data = request.POST
@@ -234,6 +239,12 @@ def update_user(request, user_id):
             user_to_update.email = post_data['email']
             user_to_update.username = post_data['email']
             user_to_update.save()
+
+            info_to_update.date_of_birth = post_data['date']
+            info_to_update.cpr = post_data['cpr']
+            info_to_update.phone_number = post_data['phone']
+            info_to_update.save()
+
     return redirect('banking_system_app:clients')
 
 
@@ -334,6 +345,15 @@ def create_user(request, user_type):
             new_user.is_active = True
         new_user.set_password('12345678')
         new_user.save()
+
+        user_info = UserInformation.objects.create(
+            user=new_user,
+            date_of_birth=post_data['date'],
+            cpr=post_data['cpr'],
+            phone_number=post_data['phone'],
+        )
+        user_info.save()
+
         if user_type == 'client':
             context = get_clients_overview_response_context(request)
             return render(request, 'admin/admin_clients.html', context)
