@@ -23,7 +23,7 @@ class UID(models.Model):
 
 class KnownBank(models.Model):
     routing_number = models.CharField(primary_key=True, max_length=3, editable=False, default=generate_routing_number)
-    user_id = models.ForeignKey(User, models.DO_NOTHING)
+    user = models.ForeignKey(User, models.DO_NOTHING)
     address = models.CharField(max_length=15)
     port = models.CharField(max_length=4)
     name = models.CharField(max_length=255)
@@ -137,11 +137,11 @@ class Ledger(models.Model):
         return uid
 
     @classmethod
-    def inter_transfer(cls, amount, account, text) -> int:
+    def inter_transfer(cls, amount, sender, reciever, text, known_bank) -> int:
         with transaction.atomic():
-            if account.balance >= amount and amount > 0:
+            if sender.balance >= amount and amount > 0:
                 uid = UID.uid
-                cls(amount=amount, transaction=uid, account=account, text=text).save()
+                cls(amount=amount, transaction=uid, account=sender, text=text).save()
             else:
                 raise InsufficientFunds
         return uid

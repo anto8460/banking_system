@@ -6,4 +6,3 @@ class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ['id']
         model = Account
-

@@ -6,6 +6,7 @@ from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from banking_system_app.InterTransaction.InterTransaction import inter_transfer
 
 
 @login_required(login_url='/login')
@@ -100,32 +101,39 @@ def transfer(request):
             account_id = request.POST['recipient'][3:]
 
             try:
-
                 known_bank = KnownBank.objects.filter(routing_number=routing_number)
 
                 if not known_bank:
                     raise ObjectDoesNotExist('Unknown routing number')
 
-                if known_bank.is_local:
+                if known_bank[0].is_local:
 
                     sender = Account.objects.get(id=request.POST['sender'])
                     recipient = Account.objects.get(id=account_id)
+
+                    amount = request.POST['amount']
+                    text = request.POST['text']
+
+                    # Make transaction
+                    Ledger.intra_transfer(float(amount), sender, text, recipient, text)
+
+                    context['success'] = 'true'
 
                     if sender == recipient:
                         raise ValidationError(
                             "Recipient account number is the same as the sender")
 
+                else:
+                    sender = Account.objects.get(id=request.POST['sender'])
+                    recipient = account_id
+                    amount = request.POST['amount']
+                    text = request.POST['text']
+
+                    inter_transfer(amount, sender, text, recipient, text, known_bank[0])
+
             except (ValidationError, ObjectDoesNotExist) as e:
                 context = {'error': e}
                 return render(request, 'transfer_form.html', context)
-
-            amount = request.POST['amount']
-            text = request.POST['text']
-
-            # Make transaction
-            Ledger.transfer(float(amount), sender, text, recipient, text)
-
-            context['success'] = 'true'
 
             return render(request, 'transfer_form.html', context)
         else:
