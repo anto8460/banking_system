@@ -117,6 +117,21 @@ class UserInformation(models.Model):
         return f'Information - {self.user.first_name} {self.user.last_name}: UserId {self.user}'
 
 
+class TransferRequests(models.Model):
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    from_account = models.ForeignKey(Account, related_name='from_account', on_delete=models.CASCADE)
+    to_account = models.ForeignKey(Account, related_name='to_account', on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    text = models.TextField()
+    is_new = models.BooleanField(default=True)
+    is_paid = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'transfer_requests'
+
+    def __str__(self):
+        return f'Transfer request from account: {self.from_account} to account: {self.to_account}'
+
 class Ledger(models.Model):
     account = models.ForeignKey(Account, on_delete=models.PROTECT)
     transaction = models.ForeignKey(UID, on_delete=models.PROTECT)

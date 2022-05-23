@@ -32,6 +32,9 @@ urlpatterns = [
     # User profile
     path('profile', views.user_profile, name='user_profile'),
 
+    # Transfer Requests
+    path('transfer_requests/<account_id>', views.transfer_requests, name='transfer_request'),
+
 
     # ========== Action endpoints ==========
 

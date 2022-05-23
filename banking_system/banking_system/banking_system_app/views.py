@@ -1,5 +1,5 @@
 
-from .models import Account, AccountType, Ledger, UserInformation, KnownBank
+from .models import Account, AccountType, Ledger, UserInformation, KnownBank, TransferRequests
 from .AccountRanks import AccountRanks
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -27,6 +27,21 @@ def home(request):
         # If the user is an employee
         else:
             return show_clients_overview(request)
+
+
+@login_required(login_url='/login')
+def transfer_requests(request, account_id):
+
+    tr_requests = TransferRequests.objects.filter(to_account=account_id)
+    account = Account.objects.get(id=account_id)
+
+    context = {
+        'requests': tr_requests,
+        'account': account,
+    }
+
+    return render(request, 'client/transfer_requests.html', context)
+
 
 @login_required(login_url='/login')
 def user_profile(request):
