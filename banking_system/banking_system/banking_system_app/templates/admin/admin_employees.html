@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% include 'partials/_header.html' with title='ANFA Bank | Admin Panel' %}
+    </head>
+    <body class="employees">
+        {% include 'partials/_admin_navbar.html' with selected='employees'%}
+        <div class="container">
+            <div class="main">
+                <a href="{% url 'banking_system_app:show_create_user' user_type='employee' %}">Add new employee</a>
+                <h3>ACTIVE EMPLOYEES</h3>
+                {% include 'partials/_employees_overview.html' with employees=active_employees %}
+                <h3>UNACTIVE EMPLOYEES</h3>
+                {% include 'partials/_employees_overview.html' with employees=unactive_employees %}
+            </div>
+        </div>
+    </body>
+</html>

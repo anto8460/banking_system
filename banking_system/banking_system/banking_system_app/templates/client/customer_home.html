@@ -1,0 +1,33 @@
+{% extends "client/customer_nav_bar_template.html" %}
+{% load humanize %}
+{% block content %}
+    <h1>Welcome, {{ user.first_name }}!</h1>
+    <table class="table table-striped">
+        <h3>Select account</h3>
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Account number</th>
+                <th scope="col">Type</th>
+                <th scope="col">Balance</th>
+            </tr>
+        </thead>
+        {% for account in accounts %}
+            <tbody>
+                <tr style="cursor: pointer;" onclick="window.location.href = 'account/{{ account.id }}'">
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>
+                        <span href="account/{{ account.id }}">{{ account.id }}</span>
+                    </td>
+                    <td>
+                        <span href="account/{{ account.id }}">{{ account.account_type.type.capitalize }}<span/>
+                    </td>
+                    <td>
+                        <span href="account/{{ account.id }}">{{ account.balance|intcomma }} DKK</span>
+                    </td>
+                </tr>
+            </tbody>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
