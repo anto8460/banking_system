@@ -28,6 +28,21 @@ def home(request):
         else:
             return show_clients_overview(request)
 
+@login_required(login_url='/login')
+def user_profile(request):
+    user = request.user
+    user_info = UserInformation.objects.get(user=user)
+    context = {
+        'user': user,
+        'info': user_info
+    }
+    if request.method == 'POST':
+        user_info.phone_number = request.POST['phone']
+
+        user_info.use_mfa = True if 'use_mfa' in request.POST else False
+        user_info.save()
+
+    return render(request, 'client/user_profile.html', context)
 
 @login_required(login_url='/login')
 def account_details(request, account_id):

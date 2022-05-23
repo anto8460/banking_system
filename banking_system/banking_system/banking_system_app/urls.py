@@ -29,6 +29,9 @@ urlpatterns = [
     # Loan
     path('loan/<account_id>', views.loan, name='loan'),
 
+    # User profile
+    path('profile', views.user_profile, name='user_profile'),
+
 
     # ========== Action endpoints ==========
 
