@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from banking_system_app import views
 
 app_name = 'banking_system_app'
 

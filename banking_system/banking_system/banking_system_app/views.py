@@ -1,5 +1,4 @@
 
-from django.dispatch import receiver
 from .models import Account, AccountType, Ledger, UserInformation, KnownBank
 from .AccountRanks import AccountRanks
 from django.shortcuts import render, redirect
@@ -115,14 +114,22 @@ def transfer(request):
                     amount = request.POST['amount']
                     text = request.POST['text']
 
+                    if sender == recipient:
+                        raise ValidationError(
+                            "Recipient account number is the same as the sender")
+
                     # Make transaction
                     Ledger.intra_transfer(float(amount), sender, text, recipient, text)
 
                     context['status'] = 'true'
 
-                    if sender == recipient:
-                        raise ValidationError(
-                            "Recipient account number is the same as the sender")
+                    # Sending SMS confirmation to both parties
+                    sender_owner = UserInformation.objects.get(user=sender.user_id_id)
+                    recipient_owner = UserInformation.objects.get(user=recipient.user_id_id)
+                    sender_message = f"Hi! You just sent { amount } DKK to { recipient.id }"
+                    recipient_message = f"Hi! You have been transferred { amount } DKK to { recipient.id }"
+                    sms_task.send_message(sender_message, sender_owner.phone_number)
+                    sms_task.send_message(recipient_message, recipient_owner.phone_number)
 
                 else:
                     sender = Account.objects.get(id=request.POST['sender'])
@@ -134,28 +141,11 @@ def transfer(request):
 
                     context['status'] = 1 if success else 0
 
+
+
             except (ValidationError, ObjectDoesNotExist) as e:
                 context = {'error': e}
-                return render(request, 'transfer_form.html', context)
-
-            return render(request, 'transfer_form.html', context)
-            except ValidationError as e:
-                context = {'error': e.message}
                 return render(request, 'client/transfer_form.html', context)
-
-            amount = request.POST['amount']
-            text = request.POST['text']
-
-            # Make transaction
-            Ledger.transfer(float(amount), sender, text, recipient, text)
-
-            # Sending SMS confirmation to both parties
-            sender_owner = UserInformation.objects.get(user=sender.user_id_id)
-            recipient_owner = UserInformation.objects.get(user=recipient.user_id_id)
-            sender_message = f"Hi! You just sent { amount } DKK to { recipient.id }"
-            recipient_message = f"Hi! You have been transferred { amount } DKK to { recipient.id }"
-            sms_task.send_message(sender_message, sender_owner.phone_number)
-            sms_task.send_message(recipient_message, recipient_owner.phone_number)
 
             context['success'] = 'true'
 
