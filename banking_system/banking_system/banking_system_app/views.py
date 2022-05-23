@@ -6,7 +6,6 @@ from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from banking_system_app.InterTransaction.InterTransaction import inter_transfer
 
 
 @login_required(login_url='/login')
@@ -117,7 +116,7 @@ def transfer(request):
                     # Make transaction
                     Ledger.intra_transfer(float(amount), sender, text, recipient, text)
 
-                    context['success'] = 'true'
+                    context['status'] = 'true'
 
                     if sender == recipient:
                         raise ValidationError(
@@ -129,7 +128,9 @@ def transfer(request):
                     amount = request.POST['amount']
                     text = request.POST['text']
 
-                    Ledger.inter_transfer(amount, sender, text, recipient, known_bank[0])
+                    success = Ledger.inter_transfer(amount, sender, text, recipient, known_bank[0])
+
+                    context['status'] = 1 if success else 0
 
             except (ValidationError, ObjectDoesNotExist) as e:
                 context = {'error': e}

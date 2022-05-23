@@ -146,7 +146,7 @@ class Ledger(models.Model):
           sender: Account,
           sender_text: str,
           reciever: str,
-          known_bank: KnownBank):
+          known_bank: KnownBank) -> bool:
         
         ip = known_bank.address
         port = known_bank.port
@@ -174,6 +174,10 @@ class Ledger(models.Model):
                 transaction_text = f"Transaction to: {known_bank.routing_number} - {reciever}\n" + sender_text
                 uid = UID.uid
                 cls(amount=-float(amount), transaction=uid, account=sender, text=transaction_text).save()
+
+                return True
+
+        return False
 
     def __str__(self):
         return f'{self.amount} :: {self.transaction} :: {self.created_at} :: {self.account} :: {self.text}'
