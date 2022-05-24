@@ -1,0 +1,79 @@
+{% extends "client/customer_nav_bar_template.html" %}
+{% load date_utils %}
+{% load humanize %}
+{% block content %}
+    <div style="display:flex; justify-content:space-between;">
+        <h2>Account: {{ account.id }}</h2>
+        <h2>
+            Balance:
+            <span {% if account.balance >= 0 %} style="color: green;" {% else %} style="color: red;" {% endif %}>
+                {{ account.balance|intcomma }}
+            </span> DKK
+        </h2>
+    </div>
+    <div>
+        <table class="table table-striped">
+            <h3>Transfer Requests</h3>
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">From Account</th>
+                    <th scope="col">Text</th>
+                    <th scope="col">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in requests %}
+                <tr style="cursor: pointer; {%if request.is_new %} background-color: #c0ffb7{% endif %}" onclick="window.location.href = '/request/{{ request.id }}'">
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>
+                            <span href="/request/{{ request.id }}">{{ request.from_account.account_number }}</span>
+                        </td>
+                        <td>
+                            <span href="/request/{{ request.id }}">{{ request.text }}</td></span>
+                        <td style="color:red;">
+                            <span href="/request/{{ request.id }}">{{ request.amount|intcomma }} DKK</span>
+                        </td>
+                        {% if request.is_closed %}
+                        <td style="color:red;">
+                            <span href="/request/{{ request.id }}">Closed</span>
+                        </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <table class="table table-striped">
+            <h3>My Transfer Requests</h3>
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">To Account</th>
+                    <th scope="col">Text</th>
+                    <th scope="col">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in my_requests %}
+                <tr style="cursor: pointer; {%if request.is_new %} background-color: #c0ffb7{% endif %}" onclick="window.location.href = '/request/{{ request.id }}'">
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>
+                            <span href="/request/{{ request.id }}">{{ request.to_account.account_number }}</span>
+                        </td>
+                        <td>
+                            <span href="/request/{{ request.id }}">{{ request.text }}</td></span>
+                        <td style="color:green;">
+                            <span href="/request/{{ request.id }}">{{ request.amount|intcomma }} DKK</span>
+                        </td>
+                        {% if request.is_closed %}
+                        <td style="color:red;">
+                            <span href="/request/{{ request.id }}">Closed</span>
+                        </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a class="btn btn-info" href="/make_request" style="float: right;">Make a request</a>
+    {% endblock %}

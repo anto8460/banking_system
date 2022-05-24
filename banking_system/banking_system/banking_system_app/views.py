@@ -1,5 +1,6 @@
 
-from .models import Account, AccountType, Ledger, UserInformation, KnownBank
+from django.http import HttpResponseRedirect
+from .models import Account, AccountType, Ledger, UserInformation, KnownBank, TransferRequests
 from .AccountRanks import AccountRanks
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -28,6 +29,119 @@ def home(request):
         else:
             return show_clients_overview(request)
 
+
+@login_required(login_url='/login')
+def transfer_requests(request, account_id):
+
+    tr_requests = TransferRequests.objects.filter(to_account=account_id)
+    my_requests = TransferRequests.objects.filter(from_account=account_id)
+    account = Account.objects.get(id=account_id)
+
+    context = {
+        'requests': tr_requests,
+        'my_requests': my_requests,
+        'account': account,
+    }
+
+    return render(request, 'client/transfer_requests.html', context)
+
+
+@login_required(login_url='/login')
+def request_details(request, request_id):
+    tr_request = TransferRequests.objects.get(id=request_id)
+    user = request.user
+    user_accounts = Account.objects.filter(user_id=user)
+
+    is_mine = True if tr_request.from_account in user_accounts else False
+
+    context = {
+        'tr_request': tr_request,
+        'is_mine': is_mine,
+    }
+
+    tr_request.is_new = False
+    tr_request.save()
+
+    if request.method == 'POST':
+        if 'pay' in request.POST:
+            if not is_mine:
+                text = "Transaction Request: " + tr_request.text
+                Ledger.intra_transfer(
+                    amount=tr_request.amount,
+                    debit_account=tr_request.to_account,
+                    debit_text=text,
+                    credit_account=tr_request.from_account,
+                    credit_text=text)
+
+                tr_request.delete()
+        elif 'close' in request.POST:
+            tr_request.is_closed = True
+            tr_request.save()
+
+        elif 'open' in request.POST:
+            tr_request.is_closed = False
+            tr_request.save()
+
+    return render(request, 'client/request_details.html', context)
+
+
+@login_required(login_url='/login')
+def make_request(request):
+
+    user = request.user
+    accounts = Account.objects.filter(user_id=user)
+
+    context = {
+        'user': user,
+        'accounts': accounts,
+    }
+
+    if request.method == 'POST':
+        try:
+            from_account = request.POST['from_account']
+            to_account = request.POST['to_account']
+
+            if from_account == to_account:
+                raise ValidationError
+
+            from_account = Account.objects.get(id=from_account)
+            to_account = Account.objects.get(id=to_account)
+
+            amount = float(request.POST['amount'])
+            text = request.POST['text']
+
+            tr_request = TransferRequests.objects.create(
+                from_account=from_account,
+                to_account=to_account,
+                amount=amount,
+                text=text)
+
+            tr_request.save()
+
+            return HttpResponseRedirect(f"/transfer_requests/{from_account.id}")
+
+        except (ValidationError, ObjectDoesNotExist) as e:
+            context = {'error': e}
+            return render(request, 'client/make_request.html', context)
+
+    return render(request, 'client/make_request.html', context)
+
+
+@login_required(login_url='/login')
+def user_profile(request):
+    user = request.user
+    user_info = UserInformation.objects.get(user=user)
+    context = {
+        'user': user,
+        'info': user_info
+    }
+    if request.method == 'POST':
+        user_info.phone_number = request.POST['phone']
+
+        user_info.use_mfa = True if 'use_mfa' in request.POST else False
+        user_info.save()
+
+    return render(request, 'client/user_profile.html', context)
 
 @login_required(login_url='/login')
 def account_details(request, account_id):
@@ -141,7 +255,7 @@ def transfer(request):
 
                     context['status'] = 1 if success else 0
 
-
+                return HttpResponseRedirect(f"/account/{request.POST['sender']}")
 
             except (ValidationError, ObjectDoesNotExist) as e:
                 context = {'error': e}
@@ -172,9 +286,13 @@ def show_user(request, user_id):
     if (len(current_user) > 0):
         current_user = current_user[0]
         user_accounts = Account.objects.filter(user_id_id=user_id, is_active=True)
+        user_info = UserInformation.objects.get(user_id=current_user)
+
         context = {
             'current_user': current_user,
-            'accounts': user_accounts
+            'accounts': user_accounts,
+            'user_info': user_info,
+            'date': user_info.date_of_birth.strftime('%Y-%m-%d'),
         }
         return render(request, 'admin/admin_user_details.html', context)
     else:
@@ -226,6 +344,7 @@ def show_employees_overview(request):
 def update_user(request, user_id):
     if request.method == 'POST':
         user_to_update = User.objects.filter(id=user_id)
+        info_to_update = UserInformation.objects.get(user=user_to_update[0])
         if user_to_update:
             user_to_update = user_to_update[0]
             post_data = request.POST
@@ -234,6 +353,12 @@ def update_user(request, user_id):
             user_to_update.email = post_data['email']
             user_to_update.username = post_data['email']
             user_to_update.save()
+
+            info_to_update.date_of_birth = post_data['date']
+            info_to_update.cpr = post_data['cpr']
+            info_to_update.phone_number = post_data['phone']
+            info_to_update.save()
+
     return redirect('banking_system_app:clients')
 
 
@@ -334,6 +459,15 @@ def create_user(request, user_type):
             new_user.is_active = True
         new_user.set_password('12345678')
         new_user.save()
+
+        user_info = UserInformation.objects.create(
+            user=new_user,
+            date_of_birth=post_data['date'],
+            cpr=post_data['cpr'],
+            phone_number=post_data['phone'],
+        )
+        user_info.save()
+
         if user_type == 'client':
             context = get_clients_overview_response_context(request)
             return render(request, 'admin/admin_clients.html', context)

@@ -1,0 +1,40 @@
+{% extends "client/customer_nav_bar_template.html" %}
+{% load date_utils %}
+{% load humanize %}
+{% block content %}
+
+<div class="container">
+    <h3> Request Details</h3>
+    {% if is_mine %}
+        <label>To Account: {{ tr_request.to_account.id }}</label>
+    {% else %}
+        <label>From Account: {{ tr_request.from_account.id }}</label>
+    {% endif %}
+    <br>
+    <label>Amount: {{ tr_request.amount }}</label>
+    <br>
+    <label>Text: {{ tr_request.text }}</label>
+    <br>
+    {% if tr_request.is_closed %}
+    <label style="color: red">Closed</label>
+    <br>
+    <br>
+    {% endif %}
+    <form action="" method="post">
+        {% csrf_token %}
+        {% if tr_request.is_closed %}
+            <button name="open" value="1" class="btn btn-success">Re-open</button>
+        {% else %}
+            {% if not is_mine %}
+                <button name="pay" value="1" class="btn btn-success">Pay</button>
+            {% endif %}
+            <button name="close" value="2" class="btn btn-danger">Close</button>
+        {% endif %}
+    </form>
+    
+</div>
+
+
+
+
+{% endblock %}

@@ -7,10 +7,13 @@
         {% include 'partials/_admin_navbar.html' with selected='accounts'%}
         <div class="container">
             <div class="main">
-                <a href="{% url 'banking_system_app:show_create_account' %}">Add new account</a>                
+                <h3> Active Accounts </h3>
                 {% include 'partials/_accounts_overview.html' with accounts=active_accounts %}
+                <h3> Unactive Accounts </h3>
                 {% include 'partials/_accounts_overview.html' with accounts=unactive_accounts %}
+                <a type="button" class="btn btn-light" href="{% url 'banking_system_app:show_create_account' %}">Add new account</a>                
             </div>
         </div>
     </body>
 </html>
+

@@ -18,6 +18,19 @@
         <label>Email:</label>
         <input name="email" type="text" value="{{ current_user.email }}">
     </div>
+    <div>
+    <label>Date of Birth:</label>
+        <input type="date" id="start" name="date" value={{ date }} min="1900-01-01" max="2003-01-01">
+    </div>
+    <div>
+        <label>CPR:</label>
+        <input name="cpr" type="text" value="{{ user_info.cpr }}">
+    </div>
+    <div>
+        <label>Phone Number:</label>
+        <input name="phone" type="text" value="{{ user_info.phone_number }}">
+    </div>
+
     {% if user and action != 'create' and current_user.is_active and current_user.id != user.id %}
         <a href="{% url 'banking_system_app:delete_user' user_id=current_user.id %}">Deactivate</i></a>
     {% elif action != 'create' and not current_user.is_active and current_user.id != user.id %}
