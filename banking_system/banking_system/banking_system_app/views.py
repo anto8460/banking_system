@@ -255,6 +255,8 @@ def transfer(request):
 
                     context['status'] = 1 if success else 0
 
+                return HttpResponseRedirect(f"/account/{request.POST['sender']}")
+
             except (ValidationError, ObjectDoesNotExist) as e:
                 context = {'error': e}
                 return render(request, 'client/transfer_form.html', context)
