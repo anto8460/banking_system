@@ -1,4 +1,5 @@
 
+from django.http import HttpResponseRedirect
 from .models import Account, AccountType, Ledger, UserInformation, KnownBank, TransferRequests
 from .AccountRanks import AccountRanks
 from django.shortcuts import render, redirect
@@ -33,14 +34,97 @@ def home(request):
 def transfer_requests(request, account_id):
 
     tr_requests = TransferRequests.objects.filter(to_account=account_id)
+    my_requests = TransferRequests.objects.filter(from_account=account_id)
     account = Account.objects.get(id=account_id)
 
     context = {
         'requests': tr_requests,
+        'my_requests': my_requests,
         'account': account,
     }
 
     return render(request, 'client/transfer_requests.html', context)
+
+
+@login_required(login_url='/login')
+def request_details(request, request_id):
+    tr_request = TransferRequests.objects.get(id=request_id)
+    user = request.user
+    user_accounts = Account.objects.filter(user_id=user)
+
+    is_mine = True if tr_request.from_account in user_accounts else False
+
+    context = {
+        'tr_request': tr_request,
+        'is_mine': is_mine,
+    }
+
+    tr_request.is_new = False
+    tr_request.save()
+
+    if request.method == 'POST':
+        if 'pay' in request.POST:
+            if not is_mine:
+                text = "Transaction Request: " + tr_request.text
+                Ledger.intra_transfer(
+                    amount=tr_request.amount,
+                    debit_account=tr_request.to_account,
+                    debit_text=text,
+                    credit_account=tr_request.from_account,
+                    credit_text=text)
+
+                tr_request.delete()
+        elif 'close' in request.POST:
+            tr_request.is_closed = True
+            tr_request.save()
+
+        elif 'open' in request.POST:
+            tr_request.is_closed = False
+            tr_request.save()
+
+    return render(request, 'client/request_details.html', context)
+
+
+@login_required(login_url='/login')
+def make_request(request):
+
+    user = request.user
+    accounts = Account.objects.filter(user_id=user)
+
+    context = {
+        'user': user,
+        'accounts': accounts,
+    }
+
+    if request.method == 'POST':
+        try:
+            from_account = request.POST['from_account']
+            to_account = request.POST['to_account']
+
+            if from_account == to_account:
+                raise ValidationError
+
+            from_account = Account.objects.get(id=from_account)
+            to_account = Account.objects.get(id=to_account)
+
+            amount = float(request.POST['amount'])
+            text = request.POST['text']
+
+            tr_request = TransferRequests.objects.create(
+                from_account=from_account,
+                to_account=to_account,
+                amount=amount,
+                text=text)
+
+            tr_request.save()
+
+            return HttpResponseRedirect(f"/transfer_requests/{from_account.id}")
+
+        except (ValidationError, ObjectDoesNotExist) as e:
+            context = {'error': e}
+            return render(request, 'client/make_request.html', context)
+
+    return render(request, 'client/make_request.html', context)
 
 
 @login_required(login_url='/login')
@@ -170,8 +254,6 @@ def transfer(request):
                     success = Ledger.inter_transfer(amount, sender, text, recipient, known_bank[0])
 
                     context['status'] = 1 if success else 0
-
-
 
             except (ValidationError, ObjectDoesNotExist) as e:
                 context = {'error': e}

@@ -124,7 +124,7 @@ class TransferRequests(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     text = models.TextField()
     is_new = models.BooleanField(default=True)
-    is_paid = models.BooleanField(default=False)
+    is_closed = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'transfer_requests'
