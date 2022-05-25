@@ -143,6 +143,7 @@ def user_profile(request):
 
     return render(request, 'client/user_profile.html', context)
 
+
 @login_required(login_url='/login')
 def account_details(request, account_id):
     context = {}
