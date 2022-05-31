@@ -132,6 +132,7 @@ class TransferRequests(models.Model):
     def __str__(self):
         return f'Transfer request from account: {self.from_account} to account: {self.to_account}'
 
+
 class Ledger(models.Model):
     account = models.ForeignKey(Account, on_delete=models.PROTECT)
     transaction = models.ForeignKey(UID, on_delete=models.PROTECT)
@@ -162,7 +163,7 @@ class Ledger(models.Model):
           sender_text: str,
           reciever: str,
           known_bank: KnownBank) -> bool:
-        
+
         ip = known_bank.address
         port = known_bank.port
 
@@ -193,6 +194,12 @@ class Ledger(models.Model):
                 return True
 
         return False
+
+    @classmethod
+    def create_transaction(cls, amount, account, text):
+        uid = UID.uid
+        cls(amount=-float(amount), transaction=uid, account=account, text=text).save()
+        return True
 
     def __str__(self):
         return f'{self.amount} :: {self.transaction} :: {self.created_at} :: {self.account} :: {self.text}'
