@@ -29,7 +29,7 @@ class CreateTransaction(generics.CreateAPIView):
 
         account = Account.objects.get(id=account_id)
         try:
-            Ledger.create_transaction(amount, account, text).save()
+            Ledger.create_transaction(amount, account, text)
             return Response({"status": "done"})
         except:
             return Response(data={"status": "error"}, status=500)

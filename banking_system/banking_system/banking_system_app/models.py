@@ -38,6 +38,11 @@ class KnownBank(models.Model):
     class Meta:
         db_table = 'known_banks'
 
+    @staticmethod
+    def get_local_bank():
+        local_bank = KnownBank.objects.get(is_local=True)
+        return local_bank
+
 
 class AccountType(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
@@ -90,13 +95,14 @@ class Account(models.Model):
         debit_account = Account(
             account_type=AccountType.objects.get(type=AccountRanks.LOAN.value),
             user_id=self.user_id,
+            routing_number=KnownBank.get_local_bank(),
             account_name='Loan',
             is_active=True,
             created_at=timezone.now())
 
         debit_account.save()
 
-        Ledger.transfer(amount, debit_account, 'loan', self, 'loan', is_loan=True)
+        Ledger.intra_transfer(amount, debit_account, 'loan', self, 'loan', is_loan=True)
 
 
 class UserInformation(models.Model):
@@ -167,38 +173,40 @@ class Ledger(models.Model):
         ip = known_bank.address
         port = known_bank.port
 
-        token = Token.objects.get(user_id=known_bank.user)
+        if float(sender.balance) >= amount:
 
-        headers = {
-            'Authorization': f'Token {token.key}'
-        }
+            token = Token.objects.get(user_id=known_bank.user)
 
-        has_address = requests.get(f'http://{ip}:{port}/api/v1/account/{reciever}', headers=headers)
-
-        if has_address.status_code == 200:
-            transaction_text = f"Transaction from: {sender.account_number}\n" + sender_text
-
-            body = {
-                'amount': amount,
-                'account_id': reciever,
-                'text': transaction_text
+            headers = {
+                'Authorization': f'Token {token.key}'
             }
 
-            response = requests.post(f'http://{ip}:{port}/api/v1/inter-transaction', data=body, headers=headers)
+            has_address = requests.get(f'http://{ip}:{port}/api/v1/account/{reciever}', headers=headers)
 
-            if response.status_code == 200:
-                transaction_text = f"Transaction to: {known_bank.routing_number} - {reciever}\n" + sender_text
-                uid = UID.uid
-                cls(amount=-float(amount), transaction=uid, account=sender, text=transaction_text).save()
+            if has_address.status_code == 200:
+                transaction_text = f"Transaction from: {sender.account_number}\n" + sender_text
 
-                return True
+                body = {
+                    'amount': amount,
+                    'account_id': reciever,
+                    'text': transaction_text
+                }
 
-        return False
+                response = requests.post(f'http://{ip}:{port}/api/v1/inter-transaction', data=body, headers=headers)
+
+                if response.status_code == 200:
+                    transaction_text = f"Transaction to: {known_bank.routing_number} - {reciever}\n" + sender_text
+                    uid = UID.uid
+                    cls(amount=-float(-amount), transaction=uid, account=sender, text=transaction_text).save()
+
+                    return True
+        else:
+            raise InsufficientFunds
 
     @classmethod
     def create_transaction(cls, amount, account, text):
         uid = UID.uid
-        cls(amount=-float(amount), transaction=uid, account=account, text=text).save()
+        cls(amount=float(amount), transaction=uid, account=account, text=text).save()
         return True
 
     def __str__(self):

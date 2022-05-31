@@ -191,7 +191,7 @@ def loan(request, account_id):
     if request.method == 'POST':
         amount = request.POST['amount']
 
-        account.make_loan(int(amount))
+        account.make_loan(float(amount))
 
     return render(request, 'client/loan.html', context)
 
@@ -249,7 +249,7 @@ def transfer(request):
                 else:
                     sender = Account.objects.get(id=request.POST['sender'])
                     recipient = account_id
-                    amount = request.POST['amount']
+                    amount = float(request.POST['amount'])
                     text = request.POST['text']
 
                     success = Ledger.inter_transfer(amount, sender, text, recipient, known_bank[0])
@@ -262,9 +262,6 @@ def transfer(request):
                 context = {'error': e}
                 return render(request, 'client/transfer_form.html', context)
 
-            context['success'] = 'true'
-
-            return render(request, 'client/transfer_form.html', context)
         else:
             return render(request, 'client/transfer_form.html', context)
 
