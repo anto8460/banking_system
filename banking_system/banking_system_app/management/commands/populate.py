@@ -18,6 +18,9 @@ class Command(BaseCommand):
         self.create_account_types()
 
         try:
+            super_user = User.objects.create_superuser('admin', 'admin@gmail.com', 'admin')
+            super_user.save()
+
             bank_user = User.objects.create_user('bank', email='', password=secrets.token_urlsafe(64))
             bank_user.save()
             rank = AccountType.objects.get(type=AccountRanks.BASIC)
@@ -30,20 +33,19 @@ class Command(BaseCommand):
                 key="47d56c8182b60de15ef424992e52f9f2204642d1").save()
 
             local_bank = KnownBank.objects.create(
-                routing_number='ARF',
                 user=bank_user,
                 address='127.0.0.1',
                 port='8000',
                 name='ANFA1',
                 is_local=True)
 
-            foreign_bank = KnownBank.objects.create(
-                routing_number='TOP',
-                user=foreign_bank_user,
-                address='127.0.0.1',
-                port='8080',
-                name='ANFA2',
-                is_local=False)
+            # foreign_bank = KnownBank.objects.create(
+            #     routing_number='TOP',
+            #     user=foreign_bank_user,
+            #     address='127.0.0.1',
+            #     port='8080',
+            #     name='ANFA2',
+            #     is_local=False)
 
             central_account_ipo = Account.objects.create(
                 account_type=rank,

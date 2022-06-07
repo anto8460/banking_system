@@ -3,7 +3,7 @@
 {% load humanize %}
 {% block content %}
     <div style="display:flex; justify-content:space-between;">
-        <h2>Account: {{ account.id }}</h2>
+        <h2>Account: {{ account.routing_number.routing_number}}-{{ account.id }}</h2>
         <h2>
             Balance:
             <span {% if account.balance >= 0 %} style="color: green;" {% else %} style="color: red;" {% endif %}>
@@ -28,7 +28,7 @@
                 {% for transaction in account.movements %}
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
-                        <td>{{ transaction.account.id }}</td>
+                        <td>{{ account.routing_number.routing_number}}-{{ transaction.account.id }}</td>
                         <td>{{ transaction.text }}</td>
                         <td {% if transaction.amount >= 0 %} style="color:green;" {% else %} style="color:red;" {% endif %}>
                             {{ transaction.amount|intcomma }} DKK

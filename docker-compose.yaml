@@ -6,20 +6,33 @@ services:
     volumes:
       - ./data/db:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=${NAME}
+      - POSTGRES_USER=${USER1}
+      - POSTGRES_PASSWORD=${PASSWORD}
+  redis:
+    image: redis:alpine  
+  
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/banking_system
     ports:
       - "8000:8000"
     environment:
-      - POSTGRES_NAME=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - ENGINE=${ENGINE}
+      - NAME=banking_system
+      - USER1=${USER1}
+      - PASSWORD=${PASSWORD}
+      - HOST=db
+      - PORT=${PORT}
+      - SECRET_KEY=${SECRET_KEY}
+      - ACCOUNT_SID=${ACCOUNT_SID}
+      - AUTH_TOKEN=${AUTH_TOKEN}
+      - PHONE_NUMBER=${PHONE_NUMBER}
+      - REDIS=redis
     depends_on:
       - db
+      - redis
+
+
 
