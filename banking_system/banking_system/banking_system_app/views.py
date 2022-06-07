@@ -570,12 +570,14 @@ def create_account(request):
         post_data = request.POST
         account_type = post_data['account_type']
         account_owner = User.objects.get(id=post_data['account_owner'])
+        local_routing_number = KnownBank.objects.get(routing_number='ARF')
         new_account = Account(
             account_name=account_owner.email,
             created_at=timezone.now(),
             account_type_id=account_type,
             user_id_id=account_owner.id,
-            is_active=False
+            is_active=False,
+            routing_number = local_routing_number
         )
         new_account.save()
         context = get_accounts_overview_context(request)
