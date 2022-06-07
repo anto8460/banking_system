@@ -197,7 +197,7 @@ class Ledger(models.Model):
                 if response.status_code == 200:
                     transaction_text = f"Transaction to: {known_bank.routing_number} - {reciever}\n" + sender_text
                     uid = UID.uid
-                    cls(amount=-float(-amount), transaction=uid, account=sender, text=transaction_text).save()
+                    cls(amount=-float(amount), transaction=uid, account=sender, text=transaction_text).save()
 
                     return True
         else:
