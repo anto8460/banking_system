@@ -25,7 +25,7 @@ class UID(models.Model):
 
 
 class KnownBank(models.Model):
-    routing_number = models.CharField(primary_key=True, max_length=3, editable=False, default=generate_routing_number)
+    routing_number = models.CharField(primary_key=True, max_length=3, editable=True, default=generate_routing_number)
     user = models.ForeignKey(User, models.DO_NOTHING)
     address = models.CharField(max_length=15)
     port = models.CharField(max_length=4)
